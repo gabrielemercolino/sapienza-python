@@ -1,0 +1,58 @@
+Per decodificare un numero in formato XKCD occorre fare le seguenti considerazioni:
+    
+    - i valori direttamente rappresentabili sono:
+
+            codifica romana | codifica XKCD (o decimale)
+                            |
+                   I        |      1      
+                   V        |      5       
+                   X        |      10      
+                   L        |      50      
+                   C        |      100     
+                   D        |      500     
+                   M        |      1000    
+
+    - derivando dalla codifica dei numeri romani per rappresentare un valore 
+    decimale di cui non esiste una codifica diretta viene scomposto in una 
+    combinazione di valori, per esempio:
+
+            decimale | codifica romana | codifica XKCD
+                     |                 |
+               100   |        C        |      100       -> esiste una rappresentazione diretta
+               96    |       XCVI      |    1010051     -> necessario scomporre, in questo caso
+                                                            -10+100+5+1
+
+    - per rappresentare un numero il cui valore decimale è un multiplo dei valori 
+    direttamente rappresentabili (max x 3), per esempio 30, che è 10*3, viene codificato 
+    101010 (XXX secondo la codifica romana)
+
+    - per rappresentare un numero il cui valore decimale è un numero direttamente
+    rappresentabile - 1, per esempio 9, viene codificato posizionando la codifica
+    del numero il cui corrispondente decimale è 1/10 del valore successivo seguito
+    dal successivo stesso (110 nel caso d'esempio, perchè 9 è il precedente di 10, IX nella codifica romana)
+
+Prese queste considerazioni si può notare che nella codifica XKCD se una cifra diversa da 0 
+è seguita da questo anche più di una volta, significa che si tratta di un valore solo.
+Questa informazione chiaramente è cruciale per la decodifica.
+
+Quindi per decodificare si vuole procedere in questo modo:
+    1) se il valore viene fornito in una stringa sola, allora scomporre le cifre
+    in modo da avere una lista con le cifre correttamente separate senza cambiare
+    l'ordine di apparizione trasformando ogni valore nel tipo intero.
+    Esempio: 
+                input = "100100"
+                lista primo passaggio = [100, 100]
+
+    2) controllare se il successivo di ogni valore è più grande e se così moltiplicare
+    per -1 il valore stesso (per lultima considerazione).
+    Esempio:
+                lista = [10, 100]
+                lista dopo = [-10, 100]
+    
+    3) sommare le varie cifre per ottenere il valore in decimale.
+    Esempio:
+                lista = [100, 100]
+                risultato = 100+100 = 200
+
+
+                
