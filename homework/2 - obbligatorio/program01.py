@@ -28,7 +28,11 @@ numeri romani nel formato XKCD, e tornare i K valori maggiori in ordine decresce
 Implementate quindi le seguenti funzioni:
 """
 
-def decode_XKCD_tuple(xkcd_values : tuple[str, ...], k : int) -> list[int]:
+from operator import le
+from re import X
+
+
+def decode_XKCD_tuple(xkcd_values: tuple[str, ...], k: int) -> list[int]:
     '''
     Riceve una lista di stringhe che rappresentano numeri nel formato XKCD
     ed un intero k positivo.
@@ -40,11 +44,13 @@ def decode_XKCD_tuple(xkcd_values : tuple[str, ...], k : int) -> list[int]:
     Returns
     list[int]                   i k massimi valori ottenuti in ordine decrescente
     '''
-    # INSERISCI QUI IL TUO CODICE
-    pass
+    result: list[int] = [decode_value(val) for val in xkcd_values] # lista contenente i valori decodificati
+    result.sort(reverse=True) # ordino dal più grande al più piccolo
+    return [result[i] for i in range(len(result)) if i < k]
 
 
-def decode_value(xkcd : str ) -> int:
+def decode_value(xkcd: str) -> int:
+    # La funzione fa uso delle funzioni che implementano i punti 1), 2) e 3) del file algoritmo.txt
     '''
     Decodifica un valore nel formato XKCD e torna l'intero corrispondente.
 
@@ -52,14 +58,15 @@ def decode_value(xkcd : str ) -> int:
     xkcd : str                  stringa nel formato XKCD
     Returns
     int                         intero corrispondente
-    
+
     Esempio: '10010010010100511' -> 397
     '''
-    # INSERISCI QUI IL TUO CODICE
-    pass
+    xkcd_to_list = xkcd_to_list_of_weights(xkcd)
+    return list_of_weights_to_number(xkcd_to_list)
 
 
-def xkcd_to_list_of_weights(xkcd : str) -> list[int]:
+def xkcd_to_list_of_weights(xkcd: str) -> list[int]:
+    # La funzione implementa il punto 1) secondo il file algoritmo.txt
     '''
     Spezza una stringa in codifica XKCD nella corrispondente
     lista di interi, ciascuno corrispondente al peso di una lettera romana
@@ -71,11 +78,23 @@ def xkcd_to_list_of_weights(xkcd : str) -> list[int]:
 
     Esempio: '10010010010100511' -> [100, 100, 100, 10, 100, 5, 1, 1,]
     '''
-    # INSERISCI QUI IL TUO CODICE
-    pass
+    result = []
+    n_zeros = 0
+    for n in xkcd[::-1]:  # scorro la stringa nel senso inverso
+        if n == "0":
+            n_zeros += 1
+        else:
+            # inserisco il valore trovato nella prima posizione della
+            # lista tenendo conto del verso in cui scorro la stringa
+            result.insert(0, n + "0"*n_zeros)
+            # resetto il numero di zeri
+            n_zeros = 0
+    # trasformo in interi ogni elemento della lista risultante
+    return [int(n) for n in result]
 
 
-def list_of_weights_to_number(weigths : list[int] ) -> int:
+def list_of_weights_to_number(weigths: list[int]) -> int:
+    # la funzione implementa in punto 2) e 3) del file algoritmo.txt
     '''
     Trasforma una lista di 'pesi' nel corrispondente valore arabo
     tenendo conto della regola di sottrazione
@@ -84,12 +103,13 @@ def list_of_weights_to_number(weigths : list[int] ) -> int:
     lista_valori : list[int]    lista di 'pesi' di lettere romane
     Returns
     int                         numero arabo risultante
-    
+
     Esempio: [100, 100, 100, 10, 100, 5, 1, 1,] -> 397
     '''
-    # INSERISCI QUI IL TUO CODICE
-    pass
-
+    for i in range(len(weigths) - 1):
+        if weigths[i] < weigths[i+1]:
+            weigths[i] *= -1
+    return sum(weigths)
 
 
 ###################################################################################
