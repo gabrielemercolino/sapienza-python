@@ -90,7 +90,6 @@ def xkcd_to_list_of_weights(xkcd: str) -> list[int]:
             result.insert(0, int(n) * (10**n_zeros))
             # resetto il numero di zeri
             n_zeros = 0
-    # trasformo in interi ogni elemento della lista risultante
     return result
 
 
