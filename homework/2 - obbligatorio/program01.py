@@ -85,8 +85,8 @@ def xkcd_to_list_of_weights(xkcd: str) -> list[int]:
         if n == "0":
             n_zeros += 1
         else:
-            # inserisco il valore trovato nella prima posizione della
-            # lista tenendo conto del verso in cui scorro la stringa
+            # inserisco il valore (trasformato in intero) trovato nella
+            # prima posizione della lista (mantenendo quindi l'ordine di apparizione)
             result.insert(0, int(n) * (10**n_zeros))
             # resetto il numero di zeri
             n_zeros = 0
