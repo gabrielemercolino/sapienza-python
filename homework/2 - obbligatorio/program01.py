@@ -44,8 +44,9 @@ def decode_XKCD_tuple(xkcd_values: tuple[str, ...], k: int) -> list[int]:
     Returns
     list[int]                   i k massimi valori ottenuti in ordine decrescente
     '''
-    result: list[int] = [decode_value(val) for val in xkcd_values] # lista contenente i valori decodificati
-    result.sort(reverse=True) # ordino dal più grande al più piccolo
+    result: list[int] = [
+        decode_value(val) for val in xkcd_values]  # lista contenente i valori decodificati
+    result.sort(reverse=True)  # ordino dal più grande al più piccolo
     return [result[i] for i in range(len(result)) if i < k]
 
 
@@ -78,7 +79,7 @@ def xkcd_to_list_of_weights(xkcd: str) -> list[int]:
 
     Esempio: '10010010010100511' -> [100, 100, 100, 10, 100, 5, 1, 1,]
     '''
-    result = []
+    result: list[int] = []
     n_zeros = 0
     for n in xkcd[::-1]:  # scorro la stringa nel senso inverso
         if n == "0":
@@ -86,11 +87,11 @@ def xkcd_to_list_of_weights(xkcd: str) -> list[int]:
         else:
             # inserisco il valore trovato nella prima posizione della
             # lista tenendo conto del verso in cui scorro la stringa
-            result.insert(0, n + "0"*n_zeros)
+            result.insert(0, int(n) * (10**n_zeros))
             # resetto il numero di zeri
             n_zeros = 0
     # trasformo in interi ogni elemento della lista risultante
-    return [int(n) for n in result]
+    return result
 
 
 def list_of_weights_to_number(weigths: list[int]) -> int:
