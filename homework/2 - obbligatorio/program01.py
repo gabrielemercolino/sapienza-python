@@ -79,7 +79,10 @@ def xkcd_to_list_of_weights(xkcd: str) -> list[int]:
     '''
     result: list[int] = []
     n_zeros = 0
-    for n in reversed(xkcd):  # scorro la stringa nel senso inverso
+    # scorro la stringa nel senso inverso. Uso la funzione reversed
+    # ma si ottiene lo stesso risultato con xkcd[::-1] anche se con lo slicing
+    # dovrebbe essere leggermente più lento
+    for n in reversed(xkcd):
         if n == "0":
             n_zeros += 1
         else:
