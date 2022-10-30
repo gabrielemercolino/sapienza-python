@@ -28,9 +28,6 @@ numeri romani nel formato XKCD, e tornare i K valori maggiori in ordine decresce
 Implementate quindi le seguenti funzioni:
 """
 
-from operator import le
-from re import X
-
 
 def decode_XKCD_tuple(xkcd_values: tuple[str, ...], k: int) -> list[int]:
     '''
@@ -47,7 +44,8 @@ def decode_XKCD_tuple(xkcd_values: tuple[str, ...], k: int) -> list[int]:
     result: list[int] = [
         decode_value(val) for val in xkcd_values]  # lista contenente i valori decodificati
     result.sort(reverse=True)  # ordino dal più grande al più piccolo
-    return [result[i] for i in range(len(result)) if i < k]
+    # return [result[i] for i in range(len(result)) if i < k]
+    return [val for i, val in enumerate(result) if i < k]
 
 
 def decode_value(xkcd: str) -> int:
@@ -81,7 +79,7 @@ def xkcd_to_list_of_weights(xkcd: str) -> list[int]:
     '''
     result: list[int] = []
     n_zeros = 0
-    for n in xkcd[::-1]:  # scorro la stringa nel senso inverso
+    for n in reversed(xkcd):  # scorro la stringa nel senso inverso
         if n == "0":
             n_zeros += 1
         else:
