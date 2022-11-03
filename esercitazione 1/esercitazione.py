@@ -691,7 +691,6 @@ ingressso L e':
 def int_to_hist(values):
     hist = ""
     for i in range(min(values),max(values)+1):
-        val = 0
         hist += str(i) +"\t" + "*"*values.count(i)+ "\n"
     return hist
 
@@ -732,10 +731,7 @@ def anagramma(S, T):
         return False
     characters = dict()
     for character in S:
-        if character not in characters:
-            characters[character] = 1
-        else:
-            characters[character] += 1
+        characters[character] = characters.get(character, 0) +1
     for c in characters:
         if characters[c] != T.count(c):
             return False
