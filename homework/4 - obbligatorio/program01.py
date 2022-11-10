@@ -44,6 +44,16 @@ la funzione most_frequent_chars("test01/A.txt") dovrà restituire la stringa
 "hareennt".
 '''
 
+
+def leggi_parole_file(filename: str) -> str:
+    with open(filename) as f:
+        return [word.split()[0] for word in f.readlines() if len(word.split()) > 0]
+
+
 def most_frequent_chars(filename: str) -> str:
     # SCRIVI QUI LA TUA SOLUZIONE
     pass
+
+
+if __name__ == "__main__":
+    print(leggi_parole_file("test01/A.txt"))
