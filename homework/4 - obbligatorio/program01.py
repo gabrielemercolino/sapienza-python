@@ -45,7 +45,22 @@ la funzione most_frequent_chars("test01/A.txt") dovrà restituire la stringa
 '''
 
 
-def leggi_parole_file(filename: str) -> str:
+def rimuovi_nomi_file(words: list[str]) -> list[str]:
+    for word in reversed(words):
+        if word.endswith('.txt'):
+            words.remove(word)
+    return words
+
+
+def leggi_parole_files(startFilename: str, filename: str, isfirst: bool = True) -> list:
+    if not isfirst and (filename == startFilename):
+        # return leggi_parole_file(filename)
+        return []
+    x = leggi_parole_file(filename)
+    return x + leggi_parole_files(startFilename, x[0], False)
+
+
+def leggi_parole_file(filename: str) -> list[str]:
     with open(filename) as f:
         return [word.split()[0] for word in f.readlines() if len(word.split()) > 0]
 
@@ -56,4 +71,9 @@ def most_frequent_chars(filename: str) -> str:
 
 
 if __name__ == "__main__":
-    print(leggi_parole_file("test01/A.txt"))
+    # print(leggi_parole_file("test01/A.txt"))
+    x = leggi_parole_files(startFilename="test01/A.txt",
+                           filename="test01/A.txt")
+    print(x)
+    print(rimuovi_nomi_file(x))
+    pass
