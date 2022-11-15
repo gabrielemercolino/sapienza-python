@@ -4,17 +4,17 @@
 
 ''' ATTENZIONE!!! INSERITE SUBITO QUI SOTTO IL VOSTRO NOME, COGNOME E MATRICOLA '''
 
-nome        = "Gabriele"
-cognome     = "Mercolino"
-matricola   = "2046313"
+nome = "Gabriele"
+cognome = "Mercolino"
+matricola = "2046313"
 
 ################################################################################
 ################################################################################
 ################################################################################
-# SUGGERIMENTI PER IL DEBUG 
+# SUGGERIMENTI PER IL DEBUG
 #   per eseguire solo parte dei test commentare le righe 288-292 alla fine di grade.py
 #
-#   per vedere lo stack trace degli errore scommentate la riga 36 di testlib.py 
+#   per vedere lo stack trace degli errore scommentate la riga 36 di testlib.py
 ################################################################################
 ################################################################################
 ################################################################################
@@ -65,13 +65,15 @@ Esempio: se colonne=['Telefono', 'Nome', 'Indirizzo'] la tabella deve diventare
 NOTA: se colonne=[] la tabella deve rimanere invariata.
 NOTA: se elimina=[] non deve essere eliminata nessuna colonna.
 '''
+
+
 def ex1(tabella, colonne, elimina):
     # Nota 1: Prima di scrivere codice provate a risolvere il problema su carta
     # e a descrivere l'algoritmo di risoluzione a parole.
     # Nota 2: se il codice diventa complesso, spezzatelo in sotto funzioni!
     # Scrivi qui il tuo codice
 
-    tabella.sort(key= lambda diz: [diz[c] for c in colonne if c in diz])
+    tabella.sort(key=lambda diz: [diz[c] for c in colonne if c in diz])
     #tabella[:] = [diz.pop(key) for diz in tabella for key in elimina if key in diz]
     for diz in tabella:
         for key in elimina:
@@ -80,6 +82,7 @@ def ex1(tabella, colonne, elimina):
     return len(elimina)
 
 # ----------------------------------- EX.2 ----------------------------------- #
+
 
 """ Es 2: 6 punti
 
@@ -118,12 +121,36 @@ Esempio: se D = {1: [2, 3, 4, 4, 4], 2: [3, 4, 5, 6]}
          e D non contiene più la lista vuota associata alla chiave 1.
 """
 
-def ex2(D, list_rm):
+
+def order(n):
+    if n % 2 == 0:
+        return [0, -n]
+    return [1, n]
+
+
+def ex2(D: dict[int, list], list_rm):
     # Nota 1: Prima di scrivere codice provate a risolvere il problema su carta
     # e a descrivere l'algoritmo di risoluzione a parole.
     # Nota 2: se il codice diventa complesso, spezzatelo in sotto funzioni!
     # Scrivi qui il tuo codice
-    pass
+    W = {}
+    for key in D:
+        for num in D[key]:
+            W[num] = W.get(num, []) + [key]
+
+    for el in W:
+        W[el].sort(key=order)
+
+    for key in D:
+        for n in list_rm:
+            while n in D[key]:
+                D[key].remove(n)
+    for key in list(D.keys()):
+        if len(D[key]) == 0:
+            del D[key]
+    return W
+
 
 if __name__ == '__main__':
-    pass
+    test_dict = {1: [2, 3], 2: [4, 5]}
+    print(ex2(test_dict, []))
