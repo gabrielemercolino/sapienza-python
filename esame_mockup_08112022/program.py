@@ -70,17 +70,14 @@ def ex1(tabella, colonne, elimina):
     # e a descrivere l'algoritmo di risoluzione a parole.
     # Nota 2: se il codice diventa complesso, spezzatelo in sotto funzioni!
     # Scrivi qui il tuo codice
-    
-    def per_colonna_esterna(diz):
-        L = []
-        for c in colonne:
-            if c in diz:
-                L.append(diz[c])
-        return L
 
-    tabella_sorted = sorted(tabella, key=per_colonna_esterna)
-    tabella_sorted = [diz.pop(key) for diz in tabella_sorted for key in elimina if key in diz]
-    return tabella_sorted
+    tabella.sort(key= lambda diz: [diz[c] for c in colonne if c in diz])
+    #tabella[:] = [diz.pop(key) for diz in tabella for key in elimina if key in diz]
+    for diz in tabella:
+        for key in elimina:
+            if key in diz:
+                del diz[key]
+    return len(elimina)
 
 # ----------------------------------- EX.2 ----------------------------------- #
 
