@@ -54,7 +54,6 @@ def rimuovi_nomi_file(words: list[str]) -> list[str]:
 
 def leggi_parole_files(startFilename: str, filename: str, isfirst: bool = True) -> list:
     if not isfirst and (filename == startFilename):
-        # return leggi_parole_file(filename)
         return []
     x = leggi_parole_file(filename)
     return x + leggi_parole_files(startFilename, x[0], False)
@@ -62,7 +61,7 @@ def leggi_parole_files(startFilename: str, filename: str, isfirst: bool = True) 
 
 def leggi_parole_file(filename: str) -> list[str]:
     with open(filename) as f:
-        return [word.split()[0] for word in f.readlines() if len(word.split()) > 0]
+        return f.read().split()
 
 
 def most_frequent_chars(filename: str) -> str:
@@ -76,4 +75,6 @@ if __name__ == "__main__":
                            filename="test01/A.txt")
     print(x)
     print(rimuovi_nomi_file(x))
+    """ with open('test01/A.txt') as f:
+        print(f.read().split()) """
     pass
