@@ -31,33 +31,28 @@ e ritornare le stringa così costruita.
 Esempio: se il contenuto dei tre file A.txt, B.txt e C.txt nella directory
 test01 è il seguente
 
-test01/A.txt          test01/B.txt         test01/C.txt                                                                 
+test01/A.txt          test01/B.txt          test01/C.txt                                                                 
 -------------------------------------------------------------------------------
-test01/B.txt          test01/C.txt         test01/A.txt
-house                 home                 kite                                                                       
-garden                park                 hello                                                                       
-kitchen               affair               portrait                                                                     
-balloon                                    angel                                                                                                                                               
-                                           surfing                                                               
+test01/B.txt          test01/C.txt          test01/A.txt
+house                 home                  kite                                                                       
+garden                park                  hello                                                                       
+kitchen               affair                portrait                                                                     
+balloon                                     angel                                                                                                                                               
+                                            surfing                                                               
 
 la funzione most_frequent_chars("test01/A.txt") dovrà restituire la stringa
 "hareennt".
 '''
 
 
-def rimuovi_nomi_file(words: list[str]) -> list[str]:
-    for word in reversed(words):
-        if word.endswith('.txt'):
-            words.remove(word)
-    return words
-
-
-def leggi_parole_files(startFilename: str, filename: str, isfirst: bool = True) -> list:
+def leggi_parole_files(startFilename: str, filename=None, isfirst: bool = True) -> list:
+    if filename is None:
+        filename = startFilename
     # se vero allora sono tornato all'inizio della catena
     if not isfirst and (filename == startFilename):
         return []
     x = leggi_parole_file(filename)
-    return x + leggi_parole_files(startFilename, x[0], False)
+    return x[1:] + leggi_parole_files(startFilename, x[0], False)
 
 
 def leggi_parole_file(filename: str) -> list[str]:
@@ -65,15 +60,88 @@ def leggi_parole_file(filename: str) -> list[str]:
         return f.read().split()
 
 
+def genera_lettera(diz):
+    all_vals = list(diz.values())
+    all_keys = list(diz.keys())
+    vals = [val for val in all_vals if val == max(all_vals)]
+    keys = [key for key in all_keys if diz[key] == vals[0]]
+    return min(keys)
+
+
+def genera_parola_v3(words: list[str]) -> str:
+    # implementazione non ricorsiva ma praticamente uguale (almeno l'idea sarebbe questa) alla v2
+    max_len = len(max(words, key=len))
+    parola = ""
+    for i in range(max_len):
+        characters = {}
+        for word in words:
+            if len(word) > i:
+                characters[word[i]] = characters.get(word[i], 0) + 1
+        parola += genera_lettera(characters)
+    return parola
+
+
 def most_frequent_chars(filename: str) -> str:
     # SCRIVI QUI LA TUA SOLUZIONE
-    pass
+    parole = leggi_parole_files(startFilename=filename)
+    return genera_parola_v3(parole)
 
 
 if __name__ == "__main__":
-    # print(leggi_parole_file("test01/A.txt"))
-    x = leggi_parole_files(startFilename="test01/A.txt",
-                           filename="test01/A.txt")
-    print(x)
-    print(rimuovi_nomi_file(x))
-    pass
+    import time
+    import os
+
+    tests = (
+        ('test02/bullfight.txt', 'poternusakesness'),
+        ('test03/woodchuck.txt', 'aanreeaseesable'),
+        ('test04/pampers.txt', 'ceeelieessseds'),
+        ('test05/avocados.txt', 'sereeieeesssssncy'),
+        ('test06/strums.txt', 'sereeeeesssssssynssm'),
+        ('test07/sinew.txt', 'すひびずじぞぜぃけそみきおょぇどべしこしこれれあねきゞ゜ぷ'),
+        ('test08/boilings.txt', '🚏🏞😨♣☢🐸‼🗻🌚🥷🍯🎽♾🗽🍄⚔🫓😠🍈🪀🏞➡🍼👩😻📿🌁🕌👾🤓😚®❇💒🦪👒💂☪🥡🥕'),
+        ('test09/meddles.txt', 'ᛢᚦᛝᛡᚤᚬᚬᛍᚸᛘᚣᚢᛜᛥᚳᛜᛖᛄᚢᛊᚬᛟᛈᛅᛞᚹᛯᚼᛁᚺ'),
+        ('test10/aileron.txt',
+         'ᛠᚣᚻᛝᚧᛜ᛭くᚻᛝᚭᛈᚺᛦᚩᛞᛏᚽᛪᚢᚰᚯひᛃだᚯᚨろᚷᚦᛕᚸᛯᛄᛩᛂᚲᛆᛏᚰᛨぼゆᛇᛮᛚᚯᛓやᚼかᚯᚨᛦ᛫ᚩᚲᛋᚽ👘♒ぜ🕋ゔ🕣📬💊☺🦌'),
+        ('test11/metonymies.txt', 'ᛃᚬᛝᚸᛈᚦᚱᛦᛢᛮᚼᛋᚯᛤᚳᛈᛓᚿᛊᚬᛈᚯᛎᚦᛅᛮᚧᚬᛦᚲᚮᚶᛑきᛓᛔᛮぞᛘᚼᛤᚩᛮᚼᛋᛛᛡᚱᛌᛑᚩᛪきᛤᛃᛅᛞᛏᛣᚤᚻᚦᚢᚩᛨᛐᛘゔᚷᚴᚧᚺᛖᛑᛨᛈがᛃᛥᚽᛚᚣᛋᚾᚳᚩごばᚩᚰぐがたᚨᚼᚩᛉ゜ᛅᚬᚲぅしᛪᚵᚨぎᛝᛡᛀごでᛟᚸゖそぇが🏟🃏じゔᚫぴ💌🔸😖ᛆᛪᚯ᛫ᚤᛑᚺᚾᛒᛦにぼ゙ぞゃせねねな'),
+        ('test12/incipience.txt', 'sereeeeeesssssssりᚷᛈᚳᚽᚿᚪᛙᛪᛄᚩᚿᛨᚧᚮめわᛂᛆᛘᛤᛤᛜᛉᛈᚣのぽᚳᛅᚺᛊᛛᚪᚶᚡᛘᚷᚥᛑ᛬ᛋᚥᚩᚮᛏᛅᛎᚯᚱᚽしᚻᛔᚳᛇᚪᛅᚲᚪᛨᛒゐᚨᚰᚽᚩᚿつげᛊつᚢだᛇᚺᛯᚮりᚬᚴᚹよょぬおᚱᛮᛏᚹᛑᚮっᛋ🛢ᚲᛢ📲ぃᚭᛡゐぴ🆖🫒⏰👹🍹ᛅ⏏◀🛄👍🌽🔥🎅🆙🦒🦟🔤🚓😗😕ᛦᛃᛮᛈᛂ'),
+    )
+    tot_time = time.time()
+    for file, word in tests:
+        start_time = time.time()
+        x = leggi_parole_files(startFilename=file)
+        print(f"t. lettura:\t{time.time() - start_time}s")
+        start_time = time.time()
+        parola = genera_parola_v3(x)
+        print(
+            f"n. parole:\t{len(x)}\nparola:\t\t'{parola}'\ncorretto:\t{parola==word}")
+        if parola != word:
+            print(f"expected:\t'{word}'")
+        size = os.get_terminal_size()
+        print(
+            f"t. gen. parola:\t{time.time() - start_time}s", end="\n\n"+"="*size.columns+"\n\n")
+    print(f'total time:\t{time.time() - tot_time}s')
+
+# funzioni create ma non più utilizzate
+
+
+def genera_parola_v1(words: list[str]) -> str:
+    # prima versione, troppo lenta
+
+    if not words:
+        return ""
+    lettere = [word[0] for word in words]
+    lettere_cp = lettere[:]
+    lettere.sort(key=lambda letter: [-lettere_cp.count(letter), letter])
+    return lettere[0] + genera_parola_v1([word[1:] for word in words if word[1:]])
+
+
+def genera_parola_v2(words: list[str]) -> str:
+    if not words:
+        return ""
+
+    characters = {}
+    for l in words:
+        characters[l[0]] = characters.get(l[0], 0) + 1
+
+    character = genera_lettera(characters)
+    return character + genera_parola_v2([word[1:] for word in words if word[1:]])

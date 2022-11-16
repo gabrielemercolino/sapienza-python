@@ -1,2 +1,64 @@
-Write here your algorithm description (no code or personal info)
-Scrivi qui la descrizione del tuo algoritmo (senza codice o info personali)
+Per svolgere l'esercizio ho prima individuato e diviso i vari sottoproblemi:
+  
+  1) leggere le parole della catena dei file
+  
+  2) comporre la stringa secondo la specifica, ovvero ogni carattere in ogni
+      posizione è quello più frequente nella posizione stessa e il primo in 
+      ordine alfabetico se più caratteri soddisfano la condizione precedente
+
+Ogni sottoproblema porta con sè ulteriori sottoproblemi, ovvero:
+  
+  1.1) nella prima riga di ogni file è presente il percorso per il file successivo
+        e non deve essere contato come parola
+  
+  1.2) la catena di file è chiusa, il che significa che seguendola partendo
+        da un file qualsiasi si ritorna all'inizio, quindi una volta percorsa
+        tutta bisogna fermarsi
+  
+  1.3) da alcuni test in fase di progettazione si è notata la presenza di parole 
+        ripetute, costringendo ad usare una lista per tenere traccia delle parole
+  
+  2.1) una volta ottenute le parole bisogna controllare le frequenza 
+        dei caratteri per ogni posizione senza però conoscere la lunghezza
+        della stringa finale
+
+  2.2) in questo caso specifico l'efficienza è importante, sia per effettivamente
+        passare i test che per la natura del problema stesso (l'ultimo caso di test
+        ha un totale di più di 100k parole con la lunghezza della stringa finale
+        di ~200 caratteri)
+
+Seguendo quindi la "scaletta" descritta l'algoritmo procede in questo modo:
+  
+  - leggo la catena di file sapendo che per ogni file la prima parola è il file successivo.
+    Interrompo quando la prima parola è il file con cui si è iniziati.
+  
+  - scansiono le parole una lettera alla volta trovando la lettera per ogni posizione
+    come da specifica. Un esempio che spiega più nel dettaglio cosa viene fatto è il seguente:
+
+      lista di parole:
+        house  
+        garden 
+        kitchen
+        balloon
+
+      trovo la parola più lunga e mi salvo la lunghezza per sapere quante volte va 
+      fatto il ciclo successivo
+
+      controllo lettera per lettera:
+        ^
+         ^
+         ecc..
+        
+        Importante: per evitare di cercare un carattere in una stringa in cui non esiste
+        (per esempio "house" ha 5 caratteri, quindi "house"[5] non esiste) viene estratta
+        la lettera solo se la lunghezza della parola lo permette
+
+        Per ogni posizione costruisco un dizionario lettera:frequenza 
+
+        Estraendo poi la lettera più frequente (la prima in ordine alfabetico se
+        necessario) la aggiungo alla stringa finale che si sta costruendo
+      
+      infine ritorno la stringa
+
+      
+  
