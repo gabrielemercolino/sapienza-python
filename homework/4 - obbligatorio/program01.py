@@ -135,10 +135,11 @@ if __name__ == "__main__":
         else:
             print("\033[92m")
             print(f"parola:\t\t'{parola}'")
-        print("\033[0m")
+            print("\033[0m")
         size = os.get_terminal_size()
         print(
-            f"t. gen. parola:\t{time.time() - start_time}s", end="\n\n"+"="*size.columns+"\n\n")
+            f"t. gen. parola:\t{time.time() - start_time}s",
+            end="\n\n"+"="*size.columns+"\n\n")
     print(f'total time:\t{time.time() - tot_time}s')
 
 
