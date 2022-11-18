@@ -65,12 +65,11 @@ def leggi_parole_file(filename: str) -> list[str]:
         return f.read().split()
 
 
-def genera_lettera(diz):
-    all_vals = list(diz.values())
-    all_keys = list(diz.keys())
-    vals = [val for val in all_vals if val == max(all_vals)]
-    keys = [key for key in all_keys if diz[key] == vals[0]]
-    return min(keys)
+def genera_lettera(diz: dict[str, int]):
+    max_freq = max(diz, key=diz.get)    # type: ignore
+    # necessario in commento sul type solo perchè
+    # un'estensione fa un warning altrimenti
+    return min(key for key in diz if diz[key] == diz[max_freq])
 
 
 def genera_parola_v4(words_dict: dict[str, int]) -> str:
