@@ -6,7 +6,7 @@ from ddt import file_data, ddt, data, unpack
 DEBUG = True
 DEBUG = False
 
-TIMEOUT = 1  # * 2 # VM warp factor
+TIMEOUT = 2  # * 2 # VM warp factor
 
 
 @ddt
