@@ -148,7 +148,7 @@ class Snake:
         else:
             self.pos.insert(0, {"r": head["r"], "c": head["c"]-1})
 
-    def __move_up_left(self, grid: Grid):
+    def __move_up_left(self, grid: Grid):  # sourcery skip: class-extract-method
         self.__move_up(grid)
         self.__check_self_collision()
         head = self.pos[0]
