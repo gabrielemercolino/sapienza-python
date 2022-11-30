@@ -65,8 +65,13 @@ NOTA: non importate o usate altre librerie
 import images
 
 
-class Obstacle(Exception):
+class HitObstacle(Exception):
     """Snaked stepped on an obstacle"""
+    pass
+
+
+class HitSelf(Exception):
+    """Snaked stepped on itself"""
     pass
 
 
@@ -76,10 +81,7 @@ class Grid:
         self.snake: Snake = snake
         self.height = height
         self.width = width
-        """ if obstacles != None:
-            self.obstacles = list(obstacles)
-        if foods != None:
-            self.foods = list(foods) """
+
         self.grid = [[Cell() for _ in range(width)] for __ in range(height)]
         if obstacles != None:
             for ob in obstacles:
@@ -87,9 +89,6 @@ class Grid:
         if foods != None:
             for food in foods:
                 self.grid[food[0]][food[1]].setType("food")
-        # print(self.grid[3][4].getValue())
-        """ self.grid[self.snake.pos[0]["r"]
-                  ][self.snake.pos[0]["c"]].setType("snake") """
 
     def toImg(self) -> list[list[tuple]]:
         for pos in self.snake.pos:
@@ -101,8 +100,7 @@ class Snake:
     pos: list[dict] = []
 
     def __init__(self, position: dict[str, int]) -> None:
-        position["c"] -= 1
-        position["r"] += 1
+        self.pos.clear()
         self.pos.append(position)
         self.color = (0, 255, 0)
         self.movements = {
@@ -117,9 +115,9 @@ class Snake:
         }
 
     def move(self, movement: str, grid: Grid) -> None:
-        print(f"Moving to: {movement}")
         self.__setWalked(grid)
         self.movements[movement](grid)
+        self.__check_collision(grid)
         self.__check_grow(grid)
 
     def __move_up(self, grid: Grid):
@@ -152,27 +150,71 @@ class Snake:
 
     def __move_up_left(self, grid: Grid):
         self.__move_up(grid)
-        self.pos[0]["c"] -= 1
+        self.__check_self_collision()
+        head = self.pos[0]
+        if head["c"] == 0:
+            head["c"] = grid.width-1
+        else:
+            head["c"] -= 1
 
     def __move_up_right(self, grid: Grid):
         self.__move_up(grid)
-        self.pos[0]["c"] += 1
+        self.__check_self_collision()
+        head = self.pos[0]
+        if head["c"] == grid.width - 1:
+            head["c"] = 0
+        else:
+            head["c"] += 1
 
     def __move_down_left(self, grid: Grid):
         self.__move_down(grid)
-        self.pos[0]["c"] -= 1
+        self.__check_self_collision()
+        head = self.pos[0]
+        if head["c"] == 0:
+            head["c"] = grid.width-1
+        else:
+            head["c"] -= 1
 
     def __move_down_right(self, grid: Grid):
         self.__move_down(grid)
-        self.pos[0]["c"] += 1
+        self.__check_self_collision()
+        head = self.pos[0]
+        if head["c"] == grid.width - 1:
+            head["c"] = 0
+        else:
+            head["c"] += 1
 
     def __setWalked(self, grid: Grid):
-        grid.grid[snake.pos[-1]["r"]][snake.pos[-1]["c"]].setType("walked")
+        grid.grid[self.pos[-1]["r"]][self.pos[-1]["c"]].setType("walked")
 
     def __check_grow(self, grid: Grid):
         head = self.pos[0]
-        if grid.grid[head["r"]][head["c"]].getValue()["type"] != "food":
+        cell_type = grid.grid[head["r"]][head["c"]].getValue()["type"]
+        if cell_type not in ["food"]:
             self.pos.pop()
+
+    def __check_collision(self, grid: Grid):
+        head = self.pos[0]
+        if grid.grid[head["r"]][head["c"]].getValue()["type"] == "obstacle":
+            self.pos.pop(0)
+            raise HitObstacle
+        self.__check_self_collision()
+
+    def __check_self_collision(self):
+        head = self.pos[0]
+        for pos in self.pos[1:]:
+            if head == pos:
+                self.pos.pop(0)
+                raise HitSelf
+
+    def __check_cross_collision(self, direction: str):
+        try:
+            self.__check_self_collision()
+        except HitSelf as e:
+            d = 1 if direction == "right" else -1
+            head = self.pos[0]
+            if head["r"][d] in self.pos:
+                raise HitSelf from e
 
 
 class Cell:
@@ -199,36 +241,24 @@ class Cell:
         }
 
 
-def generate_snake(start_img: str, position: list[int], commands: str, out_img: str):
-    # sourcery skip: instance-method-first-arg-name
-    # Scrivi qui il tuo codice
-    pass
-
-
-if __name__ == "__main__":
-    import time
-    import json
-
-    def get_input(input_json, key='input'):
-        with open(input_json) as fr:
-            js = json.load(fr)
-            return js[key]
-
-    start_time = time.time()
-    data = get_input("./data/input_00.json")
-    image = images.load(data["start_img"])
-    obstacles = []
-    foods = []
+def generate_grid_items(image):
+    obstacles: list[tuple[int, int]] = []
+    foods: list[tuple[int, int]] = []
     for r, row in enumerate(image):
         for c, col in enumerate(row):
             if col == (255, 0, 0):
-                #print(f'Obstacle at: {(r,c)}')
                 obstacles.append((r, c))
             if col == (255, 128, 0):
-                #print(f'Food at: {(r,c)}')
                 foods.append((r, c))
+    return obstacles, foods
 
-    snake = Snake({"r": 12, "c": 13})
+
+def generate_snake(start_img: str, position: list[int, int], commands: str, out_img: str) -> int:
+    image = images.load(start_img)
+
+    obstacles, foods = generate_grid_items(image)
+
+    snake = Snake({"r": position[1], "c": position[0]})
 
     grid = Grid(
         snake,
@@ -238,15 +268,49 @@ if __name__ == "__main__":
         foods=foods
     )
 
-    movements = data["commands"].split()
-    #movements = "NW NE N N N N N N N N N N N".replace("N", "N").split()
+    movements = commands.split()
+    try:
+        for movement in movements:
+            grid.snake.move(movement, grid)
+    except HitObstacle:
+        print("hit obstacle")
+    except HitSelf:
+        print("hit body")
 
-    print(grid.snake.pos)
-    for i, movement in enumerate(movements):
-        grid.snake.move(movement, grid)
-        #print(f"moving {movement} iter: {i}")
-        print(grid.snake.pos)
-    images.save(grid.toImg(), "./test/test.png")
-    # print(grid.toImg())
+    images.save(grid.toImg(), out_img)
+    snake_len = len(grid.snake.pos)
+    del grid
+    return snake_len
+
+
+if __name__ == "__main__":
+    import time
+    import json
+    import os
+
+    def get_input(input_json, key='input'):
+        with open(input_json) as fr:
+            js = json.load(fr)
+            return js[key]
+
+    start_time = time.time()
+    for _i in range(11):
+        zero = "0" if _i < 10 else ""
+        print(f"test {zero}{_i}")
+        data = get_input(f"./data/input_{zero}{_i}.json")
+        if _i == 9:
+            print(data["commands"].split()[250:])
+        image = images.load(data["start_img"])
+
+        result = generate_snake(
+            start_img=data["start_img"],
+            position=data["position"],
+            commands=data["commands"],
+            out_img=data["out_img"].replace(
+                "/output/output_end_", "/test/test")
+        )
+        # print(grid.toImg())
+        print(f"snake lenght: {result}")
+        print("-"*os.get_terminal_size().columns)
 
     print(f'Execution time: {time.time() - start_time}s')
