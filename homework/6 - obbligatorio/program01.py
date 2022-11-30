@@ -120,61 +120,62 @@ class Snake:
         print(f"Moving to: {movement}")
         self.__setWalked(grid)
         self.movements[movement](grid)
-        self.__body_follow()
+        self.__check_grow(grid)
 
     def __move_up(self, grid: Grid):
-        if self.pos[0]["r"] == 0:
-            self.pos[0]["r"] = grid.height - 1
+        head = self.pos[0]
+        if head["r"] == 0:
+            self.pos.insert(0, {"r": grid.height - 1, "c": head["c"]})
         else:
-            self.pos[0]["r"] -= 1
+            self.pos.insert(0, {"r": head["r"] - 1, "c": head["c"]})
 
     def __move_down(self, grid: Grid):
-        if self.pos[0]["r"] == grid.height - 1:
-            self.pos[0]["r"] = 0
+        head = self.pos[0]
+        if head["r"] == grid.height - 1:
+            self.pos.insert(0, {"r": 0, "c": head["c"]})
         else:
-            self.pos[0]["r"] += 1
+            self.pos.insert(0, {"r": head["r"] + 1, "c": head["c"]})
 
     def __move_right(self, grid: Grid):
-        if self.pos[0]["c"] == grid.width - 1:
-            self.pos[0]["c"] = 0
+        head = self.pos[0]
+        if head["c"] == grid.width - 1:
+            self.pos.insert(0, {"r": head["r"], "c": 0})
         else:
-            self.pos[0]["c"] += 1
+            self.pos.insert(0, {"r": head["r"], "c": head["c"]+1})
 
     def __move_left(self, grid: Grid):
-        if self.pos[0]["c"] == 0:
-            self.pos[0]["c"] = grid.width - 1
+        head = self.pos[0]
+        if head["c"] == 0:
+            self.pos.insert(0, {"r": head["r"], "c": grid.width-1})
         else:
-            self.pos[0]["c"] -= 1
+            self.pos.insert(0, {"r": head["r"], "c": head["c"]-1})
 
     def __move_up_left(self, grid: Grid):
         self.__move_up(grid)
-        self.__move_left(grid)
+        self.pos[0]["c"] -= 1
 
     def __move_up_right(self, grid: Grid):
         self.__move_up(grid)
-        self.__move_right(grid)
+        self.pos[0]["c"] += 1
 
     def __move_down_left(self, grid: Grid):
         self.__move_down(grid)
-        self.__move_left(grid)
+        self.pos[0]["c"] -= 1
 
     def __move_down_right(self, grid: Grid):
         self.__move_down(grid)
-        self.__move_right(grid)
-
-    def __body_follow(self):
-        if len(self.pos) <= 1:
-            return
-        for i in range(1, len(self.pos)-2):
-            self.pos[i]["r"] = self.pos[i-1]["r"]
-            self.pos[i]["c"] = self.pos[i-1]["c"]
+        self.pos[0]["c"] += 1
 
     def __setWalked(self, grid: Grid):
         grid.grid[snake.pos[-1]["r"]][snake.pos[-1]["c"]].setType("walked")
 
+    def __check_grow(self, grid: Grid):
+        head = self.pos[0]
+        if grid.grid[head["r"]][head["c"]].getValue()["type"] != "food":
+            self.pos.pop()
+
 
 class Cell:
-
     def __init__(self) -> None:
         self.walked = False
         self.color = (0, 0, 0)
@@ -190,19 +191,6 @@ class Cell:
             self.color = (0, 255, 0)
         elif self.type == "walked":
             self.color = (128, 128, 128)
-
-    def walk(self):
-        if self.type == "obstacle":
-            print("stepped on obstacle")
-            raise Obstacle
-        elif self.type == "food":
-            print("stepped on food")
-            self.type = "empty"
-            self.walked = True
-            return "food"
-
-        self.walked = True
-        return "empty"
 
     def getValue(self):
         return {
@@ -227,7 +215,7 @@ if __name__ == "__main__":
             return js[key]
 
     start_time = time.time()
-    data = get_input("./data/input_10.json")
+    data = get_input("./data/input_00.json")
     image = images.load(data["start_img"])
     obstacles = []
     foods = []
@@ -251,12 +239,12 @@ if __name__ == "__main__":
     )
 
     movements = data["commands"].split()
-    #movements = "N N N N N N N N N N N N N".replace("N", "NW").split()
+    #movements = "NW NE N N N N N N N N N N N".replace("N", "N").split()
 
     print(grid.snake.pos)
     for i, movement in enumerate(movements):
         grid.snake.move(movement, grid)
-        print(f"moving {movement} iter: {i}")
+        #print(f"moving {movement} iter: {i}")
         print(grid.snake.pos)
     images.save(grid.toImg(), "./test/test.png")
     # print(grid.toImg())
