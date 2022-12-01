@@ -1,0 +1,63 @@
+Per risolvere il problema ho deciso di farlo con la programmazione ad oggetti.
+
+Ho quindi costruito le seguenti classi:
+
+  - Cell (cella), che rappresenta quello che nell'immagine è un pixel.
+    Le proprietà al suo interno sono:
+      - il tipo, che può essere:
+        - vuota
+        - cibo
+        - ostacolo
+        - scia
+      - il colore, adeguatamente associato al tipo
+    I metodi sono:
+      - cambio_tipo, utilizzato per esempio quando il serpente mangia
+        e quindi il cibo deve scomparire. Inoltre cambia correttamente il
+        colore della cella
+      - leggi_dati, che in realtà è stato inizialmente implementato per
+        debug ma lasciato solo per evitare di cambiare diverse righe di
+        codice. Inoltre, leggendo il codice, è più pulito e chiaro usando
+        questo metodo che accedere direttamente alle proprietà
+  
+  - Snake (serpente), che è autoesplicativo.
+    Le proprietà interne sono:
+      - lista di posizioni, che serve per conservare le coordinate di ogni
+        pixel appartenente al serpente
+      - il colore stesso del serpente
+      - un dizionario che mappa alle funzioni di movimento elementari, qui in seguito.
+        (evita di scrivere una serie lunga di if ... else)
+    I metodi sono:
+      - sposta, che, a seconda del comando ricevuto (uno solo), con il dizionario citato
+        precedentemente richiama la funzione elementare adeguatamente
+      - 3 metodi per controllare separatamente la collisione con ostacolo,
+        con sè stesso (in orizzontale e verticale) e incrocio
+      - controlla_crescita, che serve per vedere se è stata raggiunta una cella
+        di tipo cibo. Se sì fa crescere il serpente
+      - segna_cammino, associato al metodo precedente, se il serpente non cresce
+        allora la cella "dietro" alla coda deve essere segnata come scia
+  
+  - Grid (griglia), che racchiude le due classi precedenti, ovvero:
+    Come proprietà ci sono:
+      - il serpente
+      - una matrice di celle
+    C'è un solo metodo:
+      - esporta_immagine, che restituisce i dati in modo che possano essere
+        salvati in immagine tramite la funzione già data
+
+Infine è stata creata una funzione di supporto, genera_oggetti_griglia, che prende l'immagine e genera
+le posizioni degli ostacoli e dei cibi
+
+La funzione principale segue questi passi:
+  - carica l'immagine
+  - chiama la funzione genera_oggetti_griglia salvando i dati necessari per dopo
+  - crea un'oggetto di tipo Snake alle coordinate corrette 
+  - crea un'oggetto Grid passando tutti i parametri necessari
+  - genero una lista di movimenti usando commands.split() (commands è un parametro in ingresso)
+  - ciclo sulla lista generata e uso il metodo di movimento sullo snake per ognuno
+  - quando il ciclo finisce (si può interrompere se lo snake colpisce sè stesso o un ostacolo)
+    salvo l'immagine
+  - ritorna infine la lunghezza finale dello snake come richiesto
+
+Notare che nella descrizione delle classi sono stati omessi dei dettagli che hanno più a che fare
+con il linguaggio che con la logica del programma come per esempio la gestione della lista
+di posizioni dello snake quando si sposta nella griglia, oppure la gestione dei controlli di collisioni
