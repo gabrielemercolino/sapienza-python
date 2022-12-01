@@ -97,11 +97,10 @@ class Grid:
 
 
 class Snake:
-    pos: list[dict] = []
+    #pos: list[dict] = []
 
     def __init__(self, position: dict[str, int]) -> None:
-        self.pos.clear()
-        self.pos.append(position)
+        self.pos = [position]
         self.color = (0, 255, 0)
         self.movements = {
             "N": self.__move_up,
