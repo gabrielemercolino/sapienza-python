@@ -162,7 +162,6 @@ class Snake:
             check["c"] -= 1
         self.__check_cross_collision(head, check)
 
-
     def __move_up_right(self, grid: Grid):
         head = self.pos[0]
         check = {"r": head["r"],
