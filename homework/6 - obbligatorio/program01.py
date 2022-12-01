@@ -51,7 +51,7 @@ comandi oppure lo snake muore. Lo snake muore quando:
 
 Ad esempio considerando il caso di test data/input_00.json
 lo snake parte da "position": [12, 13] e riceve i comandi
-"commands": "S W S W W W S W W N N W N N N N N W N" 
+"commands": "S W S W W W S W W N N W N N N N N W N"
 genera l'immagine in visibile in data/expected_end_00.png
 e restituisce 5 in quanto lo snake e' lungo 5 pixels alla
 fine del gioco.
@@ -148,41 +148,62 @@ class Snake:
         else:
             self.pos.insert(0, {"r": head["r"], "c": head["c"]-1})
 
-    def __move_up_left(self, grid: Grid):  # sourcery skip: class-extract-method
-        self.__move_up(grid)
-        self.__check_self_collision()
+    def __move_up_left(self, grid: Grid):
         head = self.pos[0]
-        if head["c"] == 0:
-            head["c"] = grid.width-1
+        check = {"r": head["r"],
+                 "c": head["c"]}
+        if check["r"] == 0:
+            check["r"] = grid.height - 1
         else:
-            head["c"] -= 1
+            check["r"] -= 1
+        if check["c"] == 0:
+            check["c"] = grid.width - 1
+        else:
+            check["c"] -= 1
+        self.__check_cross_collision(head, check)
+
 
     def __move_up_right(self, grid: Grid):
-        self.__move_up(grid)
-        self.__check_self_collision()
         head = self.pos[0]
-        if head["c"] == grid.width - 1:
-            head["c"] = 0
+        check = {"r": head["r"],
+                 "c": head["c"]}
+        if check["r"] == 0:
+            check["r"] = grid.height - 1
         else:
-            head["c"] += 1
+            check["r"] -= 1
+        if check["c"] == grid.width - 1:
+            check["c"] = 0
+        else:
+            check["c"] += 1
+        self.__check_cross_collision(head, check)
 
     def __move_down_left(self, grid: Grid):
-        self.__move_down(grid)
-        self.__check_self_collision()
         head = self.pos[0]
-        if head["c"] == 0:
-            head["c"] = grid.width-1
+        check = {"r": head["r"],
+                 "c": head["c"]}
+        if check["r"] == grid.height - 1:
+            check["r"] = 0
         else:
-            head["c"] -= 1
+            check["r"] += 1
+        if check["c"] == 0:
+            check["c"] = grid.width - 1
+        else:
+            check["c"] -= 1
+        self.__check_cross_collision(head, check)
 
     def __move_down_right(self, grid: Grid):
-        self.__move_down(grid)
-        self.__check_self_collision()
         head = self.pos[0]
-        if head["c"] == grid.width - 1:
-            head["c"] = 0
+        check = {"r": head["r"],
+                 "c": head["c"]}
+        if check["r"] == grid.height - 1:
+            check["r"] = 0
         else:
-            head["c"] += 1
+            check["r"] += 1
+        if check["c"] == grid.width - 1:
+            check["c"] = 0
+        else:
+            check["c"] += 1
+        self.__check_cross_collision(head, check)
 
     def __setWalked(self, grid: Grid):
         grid.grid[self.pos[-1]["r"]][self.pos[-1]["c"]].setType("walked")
@@ -207,14 +228,17 @@ class Snake:
                 self.pos.pop(0)
                 raise HitSelf
 
-    def __check_cross_collision(self, direction: str):
-        try:
-            self.__check_self_collision()
-        except HitSelf as e:
-            d = 1 if direction == "right" else -1
-            head = self.pos[0]
-            if head["r"][d] in self.pos:
-                raise HitSelf from e
+    def __check_cross_collision(self, head, check):
+        if {
+            "r": head["r"],
+            "c": check["c"]
+        } in self.pos and {
+            "r": check["r"],
+            "c": head["c"]
+        } in self.pos:
+            raise HitSelf
+        else:
+            self.pos.insert(0, check)
 
 
 class Cell:
@@ -298,8 +322,6 @@ if __name__ == "__main__":
         zero = "0" if _i < 10 else ""
         print(f"test {zero}{_i}")
         data = get_input(f"./data/input_{zero}{_i}.json")
-        if _i == 9:
-            print(data["commands"].split()[250:])
         image = images.load(data["start_img"])
 
         result = generate_snake(
