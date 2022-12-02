@@ -76,29 +76,27 @@ class HitSelf(Exception):
 
 
 class Grid:
+    colors = {
+        "empty": (0, 0, 0),
+        "obstacle": (255, 0, 0),
+        "food": (255, 128, 0),
+        "walked": (128, 128, 128),
+        "snake": (0, 255, 0)
+    }
 
-    def __init__(self, snake, obstacles=None, foods=None, height=0, width=0) -> None:
+    def __init__(self, snake, image: list[list[tuple[int, int, int]]]) -> None:
         self.snake: Snake = snake
-        self.height = height
-        self.width = width
+        self.grid = image
+        self.height = len(image)
+        self.width = len(image[0])
 
-        self.grid = [[Cell() for _ in range(width)] for __ in range(height)]
-        if obstacles != None:
-            for ob in obstacles:
-                self.grid[ob[0]][ob[1]].setType("obstacle")
-        if foods != None:
-            for food in foods:
-                self.grid[food[0]][food[1]].setType("food")
-
-    def toImg(self) -> list[list[tuple]]:
+    def toImg(self) -> list[list[tuple[int, int, int]]]:
         for pos in self.snake.pos:
-            self.grid[pos["r"]][pos["c"]].setType("snake")
-        return [[col.getValue()["color"] for col in row] for row in self.grid]
+            self.grid[pos["r"]][pos["c"]] = (0, 255, 0)
+        return self.grid
 
 
 class Snake:
-    #pos: list[dict] = []
-
     def __init__(self, position: dict[str, int]) -> None:
         self.pos = [position]
         self.color = (0, 255, 0)
@@ -204,17 +202,17 @@ class Snake:
         self.__check_cross_collision(head, check)
 
     def __setWalked(self, grid: Grid):
-        grid.grid[self.pos[-1]["r"]][self.pos[-1]["c"]].setType("walked")
+        grid.grid[self.pos[-1]["r"]][self.pos[-1]["c"]] = Grid.colors["walked"]
 
     def __check_grow(self, grid: Grid):
         head = self.pos[0]
-        cell_type = grid.grid[head["r"]][head["c"]].getValue()["type"]
-        if cell_type != "food":
+        cell = grid.grid[head["r"]][head["c"]]
+        if cell != Grid.colors["food"]:
             self.pos.pop()
 
     def __check_collision(self, grid: Grid):
         head = self.pos[0]
-        if grid.grid[head["r"]][head["c"]].getValue()["type"] == "obstacle":
+        if grid.grid[head["r"]][head["c"]] == Grid.colors["obstacle"]:
             self.pos.pop(0)
             raise HitObstacle
         self.__check_self_collision()
@@ -239,55 +237,14 @@ class Snake:
             self.pos.insert(0, check)
 
 
-class Cell:
-    def __init__(self) -> None:
-        self.walked = False
-        self.color = (0, 0, 0)
-        self.type = "empty"
-
-    def setType(self, type: str):
-        self.type = type
-        if self.type == "obstacle":
-            self.color = (255, 0, 0)
-        elif self.type == "food":
-            self.color = (255, 128, 0)
-        elif self.type == "snake":
-            self.color = (0, 255, 0)
-        elif self.type == "walked":
-            self.color = (128, 128, 128)
-
-    def getValue(self):
-        return {
-            "type": self.type,
-            "color": self.color
-        }
-
-
-def generate_grid_items(image):
-    obstacles: list[tuple[int, int]] = []
-    foods: list[tuple[int, int]] = []
-    for r, row in enumerate(image):
-        for c, col in enumerate(row):
-            if col == (255, 0, 0):
-                obstacles.append((r, c))
-            if col == (255, 128, 0):
-                foods.append((r, c))
-    return obstacles, foods
-
-
 def generate_snake(start_img: str, position: list[int, int], commands: str, out_img: str) -> int:
     image = images.load(start_img)
-
-    obstacles, foods = generate_grid_items(image)
 
     snake = Snake({"r": position[1], "c": position[0]})
 
     grid = Grid(
         snake,
-        height=len(image),
-        width=len(image[0]),
-        obstacles=obstacles,
-        foods=foods
+        image
     )
 
     movements = commands.split()
