@@ -209,7 +209,7 @@ class Snake:
     def __check_grow(self, grid: Grid):
         head = self.pos[0]
         cell_type = grid.grid[head["r"]][head["c"]].getValue()["type"]
-        if cell_type not in ["food"]:
+        if cell_type != "food":
             self.pos.pop()
 
     def __check_collision(self, grid: Grid):
@@ -295,14 +295,13 @@ def generate_snake(start_img: str, position: list[int, int], commands: str, out_
         for movement in movements:
             grid.snake.move(movement, grid)
     except HitObstacle:
-        print("hit obstacle")
+        #print("hit obstacle")
+        pass
     except HitSelf:
-        print("hit body")
-
+        #print("hit body")
+        pass
     images.save(grid.toImg(), out_img)
-    snake_len = len(grid.snake.pos)
-    del grid
-    return snake_len
+    return len(grid.snake.pos)
 
 
 if __name__ == "__main__":
