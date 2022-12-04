@@ -92,7 +92,7 @@ class Grid:
 
     def toImg(self) -> list[list[tuple[int, int, int]]]:
         for pos in self.snake.pos:
-            self.grid[pos["r"]][pos["c"]] = (0, 255, 0)
+            self.grid[pos["r"]][pos["c"]] = self.colors["snake"]
         return self.grid
 
 
@@ -101,14 +101,14 @@ class Snake:
         self.pos = [position]
         self.color = (0, 255, 0)
         self.movements = {
-            "N": self.__move_up,
-            "S": self.__move_down,
-            "E": self.__move_right,
-            "W": self.__move_left,
-            "NW": self.__move_up_left,
-            "NE": self.__move_up_right,
-            "SW": self.__move_down_left,
-            "SE": self.__move_down_right
+            "N": self.__move_up__,
+            "S": self.__move_down__,
+            "E": self.__move_right__,
+            "W": self.__move_left__,
+            "NW": self.__move_up_left__,
+            "NE": self.__move_up_right__,
+            "SW": self.__move_down_left__,
+            "SE": self.__move_down_right__
         }
 
     def move(self, movement: str, grid: Grid) -> None:
@@ -117,35 +117,39 @@ class Snake:
         self.__check_collision(grid)
         self.__check_grow(grid)
 
-    def __move_up(self, grid: Grid):
+    def __move_up__(self, grid: Grid):
         head = self.pos[0]
         if head["r"] == 0:
-            self.pos.insert(0, {"r": grid.height - 1, "c": head["c"]})
+            new_pos = {"r": grid.height - 1, "c": head["c"]}
         else:
-            self.pos.insert(0, {"r": head["r"] - 1, "c": head["c"]})
+            new_pos = {"r": head["r"] - 1, "c": head["c"]}
+        self.pos.insert(0, new_pos)
 
-    def __move_down(self, grid: Grid):
+    def __move_down__(self, grid: Grid):
         head = self.pos[0]
         if head["r"] == grid.height - 1:
-            self.pos.insert(0, {"r": 0, "c": head["c"]})
+            new_pos = {"r": 0, "c": head["c"]}
         else:
-            self.pos.insert(0, {"r": head["r"] + 1, "c": head["c"]})
+            new_pos = {"r": head["r"] + 1, "c": head["c"]}
+        self.pos.insert(0, new_pos)
 
-    def __move_right(self, grid: Grid):
+    def __move_right__(self, grid: Grid):
         head = self.pos[0]
         if head["c"] == grid.width - 1:
-            self.pos.insert(0, {"r": head["r"], "c": 0})
+            new_pos = {"r": head["r"], "c": 0}
         else:
-            self.pos.insert(0, {"r": head["r"], "c": head["c"]+1})
+            new_pos = {"r": head["r"], "c": head["c"]+1}
+        self.pos.insert(0, new_pos)
 
-    def __move_left(self, grid: Grid):
+    def __move_left__(self, grid: Grid):
         head = self.pos[0]
         if head["c"] == 0:
-            self.pos.insert(0, {"r": head["r"], "c": grid.width-1})
+            new_pos = {"r": head["r"], "c": grid.width-1}
         else:
-            self.pos.insert(0, {"r": head["r"], "c": head["c"]-1})
+            new_pos = {"r": head["r"], "c": head["c"]-1}
+        self.pos.insert(0, new_pos)
 
-    def __move_up_left(self, grid: Grid):
+    def __move_up_left__(self, grid: Grid):
         head = self.pos[0]
         check = {"r": head["r"],
                  "c": head["c"]}
@@ -157,9 +161,9 @@ class Snake:
             check["c"] = grid.width - 1
         else:
             check["c"] -= 1
-        self.__check_cross_collision(head, check)
+        self.__check_cross_collision__(head, check)
 
-    def __move_up_right(self, grid: Grid):
+    def __move_up_right__(self, grid: Grid):
         head = self.pos[0]
         check = {"r": head["r"],
                  "c": head["c"]}
@@ -171,9 +175,9 @@ class Snake:
             check["c"] = 0
         else:
             check["c"] += 1
-        self.__check_cross_collision(head, check)
+        self.__check_cross_collision__(head, check)
 
-    def __move_down_left(self, grid: Grid):
+    def __move_down_left__(self, grid: Grid):
         head = self.pos[0]
         check = {"r": head["r"],
                  "c": head["c"]}
@@ -185,9 +189,9 @@ class Snake:
             check["c"] = grid.width - 1
         else:
             check["c"] -= 1
-        self.__check_cross_collision(head, check)
+        self.__check_cross_collision__(head, check)
 
-    def __move_down_right(self, grid: Grid):
+    def __move_down_right__(self, grid: Grid):
         head = self.pos[0]
         check = {"r": head["r"],
                  "c": head["c"]}
@@ -199,10 +203,10 @@ class Snake:
             check["c"] = 0
         else:
             check["c"] += 1
-        self.__check_cross_collision(head, check)
+        self.__check_cross_collision__(head, check)
 
     def __setWalked(self, grid: Grid):
-        grid.grid[self.pos[-1]["r"]][self.pos[-1]["c"]] = Grid.colors["walked"]
+        grid.grid[self.pos[-1]["r"]][self.pos[-1]["c"]] = grid.colors["walked"]
 
     def __check_grow(self, grid: Grid):
         head = self.pos[0]
@@ -212,7 +216,7 @@ class Snake:
 
     def __check_collision(self, grid: Grid):
         head = self.pos[0]
-        if grid.grid[head["r"]][head["c"]] == Grid.colors["obstacle"]:
+        if grid.grid[head["r"]][head["c"]] == grid.colors["obstacle"]:
             self.pos.pop(0)
             raise HitObstacle
         self.__check_self_collision()
@@ -224,7 +228,7 @@ class Snake:
                 self.pos.pop(0)
                 raise HitSelf
 
-    def __check_cross_collision(self, head, check):
+    def __check_cross_collision__(self, head, check):
         if {
             "r": head["r"],
             "c": check["c"]
