@@ -1,6 +1,67 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+'''
+Siete stati appena ingaggiati in una software house di videogiochi e
+dovete renderizzare su immagine il giochino dello snake salvando
+l'immagine finale del percorso dello snake e restituendo la lunghezza
+dello snake.
+Si implementi la funzione generate_snake che prende in ingresso un
+percorso di un file immagine, che e' l'immagine di partenza
+"start_img" che puo' contenere pixel di background neri, pixel di
+ostacolo per lo snake di colore rosso e infine del cibo di colore
+arancione. Lo snake deve essere disegnato di verde. Inoltre bisogna
+disegnare in grigio la scia che lo snake lascia sul proprio
+cammino. La funzione inoltre prende in ingresso una posizione iniziale
+dello snake, "position" come una lista di due interi X e Y. I comandi
+del giocatore su come muovere lo snake nel videogioco sono disponibili
+in una stringa "commands".  La funzione deve salvare l'immagine finale
+del cammino dello snake al percorso "out_img", che e' passato come
+ultimo argomento di ingresso alla funzione. Inoltre la funzione deve
+restituire la lunghezza dello snake al termine del gioco.
+
+Ciascun comando in "commands" corrisponde ad un segno cardinale ed e
+seguito da uno spazio. I segni cardinali possibli sono:
+
+| NW | N | NE |
+| W  |   | E  |
+| SW | S | SE |
+
+che corrispondono a movimenti dello snake di un pixel come:
+
+| alto-sinistra  | alto  | alto-destra  |
+| sinistra       |       | destra       |
+| basso-sinistra | basso | basso-destra |
+
+Lo snake si muove in base ai comandi passati e nel caso in cui
+mangia del cibo si allunga di un pixel.
+
+Lo snake puo' passare da parte a parte dell'immagine sia in
+orizzontale che in verticale. Il gioco termina quando sono finiti i
+comandi oppure lo snake muore. Lo snake muore quando:
+- colpisce un ostacolo
+- colpisce se stesso quindi non puo' passare sopra se stesso
+- si incrocia in diagonale in qualsiasi modo. Ad esempio, un percorso
+    1->2->3-4 come quello sotto a sinistra non e' lecito mentre quello a
+    destra sotto va bene.
+
+    NOT OK - diagonal cross        OK - not a diagonal cross
+        | 4 | 2 |                    | 1 | 2 |
+        | 1 | 3 |                    | 4 | 3 |
+
+Ad esempio considerando il caso di test data/input_00.json
+lo snake parte da "position": [12, 13] e riceve i comandi
+"commands": "S W S W W W S W W N N W N N N N N W N"
+genera l'immagine in visibile in data/expected_end_00.png
+e restituisce 5 in quanto lo snake e' lungo 5 pixels alla
+fine del gioco.
+
+NOTA: analizzate le immagini per avere i valori esatti dei colore da usare.
+
+NOTA: non importate o usate altre librerie
+'''
+
+
 import images
 
 
@@ -14,215 +75,207 @@ class HitSelf(Exception):
     pass
 
 
-def move_up(snake_positions, img):
-
-    head = snake_positions[0]
-    new_pos = [head[0]-1, head[1]]
-    if new_pos[0] == -1:
-        new_pos[0] = len(img)-1
-    snake_positions.insert(0, new_pos)
-
-
-def move_down(snake_positions, img):
-    head = snake_positions[0]
-    new_pos = [head[0]+1, head[1]]
-    if new_pos[0] == len(img):
-        new_pos[0] = 0
-    snake_positions.insert(0, new_pos)
-
-
-def move_left(snake_positions, img):
-    head = snake_positions[0]
-    new_pos = [head[0], head[1]-1]
-    if new_pos[1] == -1:
-        new_pos[1] = len(img[0])-1
-    snake_positions.insert(0, new_pos)
-
-
-def move_right(snake_positions, img):
-    head = snake_positions[0]
-    new_pos = [head[0], head[1]+1]
-    if new_pos[1] == len(img[0]):
-        new_pos[1] = 0
-    snake_positions.insert(0, new_pos)
-
-
-def move_up_left(snake_positions, img):
-    head = snake_positions[0]
-    new_pos = [head[0]-1, head[1]-1]
-    if new_pos[0] == -1:
-        new_pos[0] = len(img)-1
-    if new_pos[1] == -1:
-        new_pos[1] = len(img[0])-1
-    snake_positions.insert(0, new_pos)
-
-
-def move_up_right(snake_positions, img):
-    head = snake_positions[0]
-    new_pos = [head[0]-1, head[1]+1]
-    if new_pos[0] == -1:
-        new_pos[0] = len(img)-1
-    if new_pos[1] == len(img[0]):
-        new_pos[1] = 0
-    snake_positions.insert(0, new_pos)
-
-
-def move_down_left(snake_positions, img):
-    head = snake_positions[0]
-    new_pos = [head[0]+1, head[1]-1]
-    if new_pos[0] == len(img):
-        new_pos[0] = 0
-    if new_pos[1] == -1:
-        new_pos[1] = len(img[0])-1
-    snake_positions.insert(0, new_pos)
-
-
-def move_down_right(snake_positions, img):
-    head = snake_positions[0]
-    new_pos = [head[0]+1, head[1]+1]
-    if new_pos[0] == len(img):
-        new_pos[0] = 0
-    if new_pos[1] == len(img[0]):
-        new_pos[1] = 0
-    snake_positions.insert(0, new_pos)
-
-
-def get_img(img):
-    return images.load(img)
-
-
-def move_snake(img, snake_positions, movement, colors):
-    movements = {
-        "N": move_up,
-        "S": move_down,
-        "E": move_right,
-        "W": move_left,
-        "NW": move_up_left,
-        "NE": move_up_right,
-        "SW": move_down_left,
-        "SE": move_down_right
-    }
-    head = snake_positions[0]
-    top, bottom, left, right = cross(img, head)
-    #debug_cross(img, colors, top, bottom, left, right)
-    movements[movement](snake_positions, img)
-    head = check_hit(img, snake_positions, colors)
-
-    if movement in {"NE", "NW", "SE", "SW"}:
-        check_cross_hit(movement, top, bottom, left, right, snake_positions)
-
-    check_food(img, snake_positions, colors, head)
-
-
-def cross(img, head):
-    top = [len(img)-1 if head[0] == 0 else head[0]-1, head[1]]
-    bottom = [0 if head[0] == len(img) else head[0]+1, head[1]]
-    left = [head[0], len(img[0])-1 if head[1] == 0 else head[1]-1]
-    right = [head[0], 0 if head[1] == len(img[0])-1 else head[1]+1]
-
-    return top, bottom, left, right
-
-
-def check_food(img, snake_positions, colors, head):
-    did_eat: bool = img[head[0]][head[1]] == colors["food"]
-    img[head[0]][head[1]] = colors["snake"]
-    if not did_eat:
-        tail = snake_positions[-1]
-        img[tail[0]][tail[1]] = colors["walked"]
-        snake_positions.remove(tail)
-
-
-def check_cross_hit(movement, top, bottom, left, right, snake_positions):
-    cross = {
-        "NW": check_cross_hit_NW,
-        "NE": check_cross_hit_NE,
-        "SW": check_cross_hit_SW,
-        "SE": check_cross_hit_SE
-    }
-    cross[movement](top, bottom, left, right, snake_positions)
-
-
-def check_cross_hit_NW(top, bottom, left, right, snake_positions):
-    if top in snake_positions and left in snake_positions:
-        snake_positions.pop(0)
-        raise HitSelf
-
-
-def check_cross_hit_NE(top, bottom, left, right, snake_positions):
-    if top in snake_positions and right in snake_positions:
-        snake_positions.pop(0)
-        raise HitSelf
-
-
-def check_cross_hit_SW(top, bottom, left, right, snake_positions):
-    if bottom in snake_positions and left in snake_positions:
-        snake_positions.pop(0)
-        raise HitSelf
-
-
-def check_cross_hit_SE(top, bottom, left, right, snake_positions):
-    if bottom in snake_positions and right in snake_positions:
-        snake_positions.pop(0)
-        raise HitSelf
-
-
-def check_hit(img, snake_positions, colors):
-    head = snake_positions[0]
-    if img[head[0]][head[1]] == colors["snake"]:
-        snake_positions.pop(0)
-        raise HitSelf
-    elif img[head[0]][head[1]] == colors["obstacle"]:
-        snake_positions.pop(0)
-        raise HitObstacle
-    return head
-
-
-def debug_cross(img, colors, top, bottom, left, right):
-    img[top[0]][top[1]] = colors["debug"]
-    img[bottom[0]][bottom[1]] = colors["debug"]
-    img[left[0]][left[1]] = colors["debug"]
-    img[right[0]][right[1]] = colors["debug"]
-
-
-def generate_snake(start_img: str, position: list[int, int],
-                   commands: str, out_img: str) -> int:
-    # sourcery skip: use-contextlib-suppress
-
+class Grid:
     colors = {
         "empty": (0, 0, 0),
         "obstacle": (255, 0, 0),
         "food": (255, 128, 0),
         "walked": (128, 128, 128),
-        "snake": (0, 255, 0),
-        "debug": (0, 0, 255)
+        "snake": (0, 255, 0)
     }
 
-    image = get_img(start_img)
-    snake_positions = [[position[1], position[0]]]
+    def __init__(self, snake, image):
+        self.snake: Snake = snake
+        self.grid = image
+        self.height = len(image)
+        self.width = len(image[0])
 
-    image[position[1]][position[0]] = colors["snake"]
+    def toImg(self):
+        for pos in self.snake.pos:
+            self.grid[pos["r"]][pos["c"]] = self.colors["snake"]
+        return self.grid
 
+
+class Snake:
+    def __init__(self, position):
+        self.pos = [position]
+        self.color = (0, 255, 0)
+        self.movements = {
+            "N": self.__move_up__,
+            "S": self.__move_down__,
+            "E": self.__move_right__,
+            "W": self.__move_left__,
+            "NW": self.__move_up_left__,
+            "NE": self.__move_up_right__,
+            "SW": self.__move_down_left__,
+            "SE": self.__move_down_right__
+        }
+
+    def move(self, movement, grid):
+        self.__setWalked(grid)
+        self.movements[movement](grid)
+        self.__check_collision(grid)
+        self.__check_grow(grid)
+
+    def __move_up__(self, grid):
+        head = self.pos[0]
+        if head["r"] == 0:
+            new_pos = {"r": grid.height - 1, "c": head["c"]}
+        else:
+            new_pos = {"r": head["r"] - 1, "c": head["c"]}
+        self.pos.insert(0, new_pos)
+
+    def __move_down__(self, grid):
+        head = self.pos[0]
+        if head["r"] == grid.height - 1:
+            new_pos = {"r": 0, "c": head["c"]}
+        else:
+            new_pos = {"r": head["r"] + 1, "c": head["c"]}
+        self.pos.insert(0, new_pos)
+
+    def __move_right__(self, grid):
+        head = self.pos[0]
+        if head["c"] == grid.width - 1:
+            new_pos = {"r": head["r"], "c": 0}
+        else:
+            new_pos = {"r": head["r"], "c": head["c"]+1}
+        self.pos.insert(0, new_pos)
+
+    def __move_left__(self, grid):
+        head = self.pos[0]
+        if head["c"] == 0:
+            new_pos = {"r": head["r"], "c": grid.width-1}
+        else:
+            new_pos = {"r": head["r"], "c": head["c"]-1}
+        self.pos.insert(0, new_pos)
+
+    def __move_up_left__(self, grid):
+        head = self.pos[0]
+        check = {"r": head["r"],
+                 "c": head["c"]}
+        if check["r"] == 0:
+            check["r"] = grid.height - 1
+        else:
+            check["r"] -= 1
+        if check["c"] == 0:
+            check["c"] = grid.width - 1
+        else:
+            check["c"] -= 1
+        self.__check_cross_collision__(head, check)
+
+    def __move_up_right__(self, grid):
+        head = self.pos[0]
+        check = {"r": head["r"],
+                 "c": head["c"]}
+        if check["r"] == 0:
+            check["r"] = grid.height - 1
+        else:
+            check["r"] -= 1
+        if check["c"] == grid.width - 1:
+            check["c"] = 0
+        else:
+            check["c"] += 1
+        self.__check_cross_collision__(head, check)
+
+    def __move_down_left__(self, grid):
+        head = self.pos[0]
+        check = {"r": head["r"],
+                 "c": head["c"]}
+        if check["r"] == grid.height - 1:
+            check["r"] = 0
+        else:
+            check["r"] += 1
+        if check["c"] == 0:
+            check["c"] = grid.width - 1
+        else:
+            check["c"] -= 1
+        self.__check_cross_collision__(head, check)
+
+    def __move_down_right__(self, grid):
+        head = self.pos[0]
+        check = {"r": head["r"],
+                 "c": head["c"]}
+        if check["r"] == grid.height - 1:
+            check["r"] = 0
+        else:
+            check["r"] += 1
+        if check["c"] == grid.width - 1:
+            check["c"] = 0
+        else:
+            check["c"] += 1
+        self.__check_cross_collision__(head, check)
+
+    def __setWalked(self, grid):
+        tail = self.pos[-1]
+        grid.grid[tail["r"]][tail["c"]] = grid.colors["walked"]
+
+    def __check_grow(self, grid):
+        head = self.pos[0]
+        cell = grid.grid[head["r"]][head["c"]]
+        if cell != Grid.colors["food"]:
+            self.pos.pop()
+
+    def __check_collision(self, grid):
+        head = self.pos[0]
+        if grid.grid[head["r"]][head["c"]] == grid.colors["obstacle"]:
+            self.pos.pop(0)
+            raise HitObstacle
+        self.__check_self_collision()
+
+    def __check_self_collision(self):
+        head = self.pos[0]
+        for pos in self.pos[1:]:
+            if head == pos:
+                self.pos.pop(0)
+                raise HitSelf
+
+    def __check_cross_collision__(self, head, check):
+        if {
+            "r": head["r"],
+            "c": check["c"]
+        } in self.pos and {
+            "r": check["r"],
+            "c": head["c"]
+        } in self.pos:
+            raise HitSelf
+        else:
+            self.pos.insert(0, check)
+
+
+def generate_snake(start_img: str, position: list[int, int], commands: str, out_img: str) -> int:
+    image = images.load(start_img)
+
+    snake = Snake({"r": position[1], "c": position[0]})
+
+    grid = Grid(
+        snake,
+        image
+    )
+
+    movements = commands.split()
     try:
-        for movement in commands.split():
-            # print(movement)
-            move_snake(img=image, snake_positions=snake_positions,
-                       movement=movement, colors=colors)
-    except (HitObstacle, HitSelf):
+        for movement in movements:
+            grid.snake.move(movement, grid)
+    except HitObstacle:
+        #print("hit obstacle")
         pass
-
-    images.save(img=image, filename=out_img)
-    return len(snake_positions)
+    except HitSelf:
+        #print("hit body")
+        pass
+    images.save(grid.toImg(), out_img)
+    return len(grid.snake.pos)
 
 
 if __name__ == "__main__":
-    import json
     import time
+    import json
     import os
 
     def get_input(input_json, key='input'):
         with open(input_json) as fr:
             js = json.load(fr)
             return js[key]
+
     start_time = time.time()
     for _i in range(11):
         zero = "0" if _i < 10 else ""
@@ -234,8 +287,6 @@ if __name__ == "__main__":
             start_img=data["start_img"],
             position=data["position"],
             commands=data["commands"],
-            #commands="N ".replace("N", "SE")*15,
-            #commands="N N W NW E NE SE E E E S S SE E NW SW",
             out_img=data["out_img"].replace(
                 "/output/output_end_", "/test/test")
         )
