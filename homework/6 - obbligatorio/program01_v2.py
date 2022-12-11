@@ -3,6 +3,8 @@
 
 import images
 
+from line_profiler_pycharm import profile
+
 
 class HitObstacle(Exception):
     """Snaked stepped on an obstacle"""
@@ -13,7 +15,7 @@ class HitSelf(Exception):
     """Snaked stepped on itself"""
     pass
 
-
+@profile
 def move_up(snake_positions, img):
 
     head = snake_positions[0]
@@ -30,7 +32,7 @@ def move_down(snake_positions, img):
         new_pos[0] = 0
     snake_positions.insert(0, new_pos)
 
-
+@profile
 def move_left(snake_positions, img):
     head = snake_positions[0]
     new_pos = [head[0], head[1]-1]
@@ -38,7 +40,7 @@ def move_left(snake_positions, img):
         new_pos[1] = len(img[0])-1
     snake_positions.insert(0, new_pos)
 
-
+@profile
 def move_right(snake_positions, img):
     head = snake_positions[0]
     new_pos = [head[0], head[1]+1]
@@ -46,7 +48,7 @@ def move_right(snake_positions, img):
         new_pos[1] = 0
     snake_positions.insert(0, new_pos)
 
-
+@profile
 def move_up_left(snake_positions, img):
     head = snake_positions[0]
     new_pos = [head[0]-1, head[1]-1]
@@ -56,7 +58,7 @@ def move_up_left(snake_positions, img):
         new_pos[1] = len(img[0])-1
     snake_positions.insert(0, new_pos)
 
-
+@profile
 def move_up_right(snake_positions, img):
     head = snake_positions[0]
     new_pos = [head[0]-1, head[1]+1]
@@ -66,7 +68,7 @@ def move_up_right(snake_positions, img):
         new_pos[1] = 0
     snake_positions.insert(0, new_pos)
 
-
+@profile
 def move_down_left(snake_positions, img):
     head = snake_positions[0]
     new_pos = [head[0]+1, head[1]-1]
@@ -76,7 +78,7 @@ def move_down_left(snake_positions, img):
         new_pos[1] = len(img[0])-1
     snake_positions.insert(0, new_pos)
 
-
+@profile
 def move_down_right(snake_positions, img):
     head = snake_positions[0]
     new_pos = [head[0]+1, head[1]+1]
@@ -90,7 +92,7 @@ def move_down_right(snake_positions, img):
 def get_img(img):
     return images.load(img)
 
-
+@profile
 def move_snake(img, snake_positions, movement, colors):
     movements = {
         "N": move_up,
@@ -113,7 +115,7 @@ def move_snake(img, snake_positions, movement, colors):
 
     check_food(img, snake_positions, colors, head)
 
-
+@profile
 def cross(img, head):
     top = [len(img)-1 if head[0] == 0 else head[0]-1, head[1]]
     bottom = [0 if head[0] == len(img) else head[0]+1, head[1]]
@@ -122,7 +124,7 @@ def cross(img, head):
 
     return top, bottom, left, right
 
-
+@profile
 def check_food(img, snake_positions, colors, head):
     did_eat: bool = img[head[0]][head[1]] == colors["food"]
     img[head[0]][head[1]] = colors["snake"]
@@ -131,41 +133,41 @@ def check_food(img, snake_positions, colors, head):
         img[tail[0]][tail[1]] = colors["walked"]
         snake_positions.remove(tail)
 
-
+@profile
 def check_cross_hit(movement, top, bottom, left, right, snake_positions):
-    cross = {
+    cross_dict = {
         "NW": check_cross_hit_NW,
         "NE": check_cross_hit_NE,
         "SW": check_cross_hit_SW,
         "SE": check_cross_hit_SE
     }
-    cross[movement](top, bottom, left, right, snake_positions)
+    cross_dict[movement](top, bottom, left, right, snake_positions)
 
-
+@profile
 def check_cross_hit_NW(top, bottom, left, right, snake_positions):
     if top in snake_positions and left in snake_positions:
         snake_positions.pop(0)
         raise HitSelf
 
-
+@profile
 def check_cross_hit_NE(top, bottom, left, right, snake_positions):
     if top in snake_positions and right in snake_positions:
         snake_positions.pop(0)
         raise HitSelf
 
-
+@profile
 def check_cross_hit_SW(top, bottom, left, right, snake_positions):
     if bottom in snake_positions and left in snake_positions:
         snake_positions.pop(0)
         raise HitSelf
 
-
+@profile
 def check_cross_hit_SE(top, bottom, left, right, snake_positions):
     if bottom in snake_positions and right in snake_positions:
         snake_positions.pop(0)
         raise HitSelf
 
-
+@profile
 def check_hit(img, snake_positions, colors):
     head = snake_positions[0]
     if img[head[0]][head[1]] == colors["snake"]:
@@ -183,7 +185,7 @@ def debug_cross(img, colors, top, bottom, left, right):
     img[left[0]][left[1]] = colors["debug"]
     img[right[0]][right[1]] = colors["debug"]
 
-
+@profile
 def generate_snake(start_img: str, position: list[int, int],
                    commands: str, out_img: str) -> int:
     # sourcery skip: use-contextlib-suppress
@@ -197,6 +199,7 @@ def generate_snake(start_img: str, position: list[int, int],
         "debug": (0, 0, 255)
     }
 
+    # noinspection PyShadowingNames
     image = get_img(start_img)
     snake_positions = [[position[1], position[0]]]
 
@@ -217,6 +220,7 @@ def generate_snake(start_img: str, position: list[int, int],
 if __name__ == "__main__":
     import json
     import time
+    # noinspection PyUnresolvedReferences
     import os
 
     def get_input(input_json, key='input'):
@@ -241,6 +245,6 @@ if __name__ == "__main__":
         )
         # print(grid.toImg())
         print(f"snake lenght: {result}")
-        print("-"*os.get_terminal_size().columns)
+        #print("-"*os.get_terminal_size().columns)
 
     print(f'Execution time: {time.time() - start_time}s')
