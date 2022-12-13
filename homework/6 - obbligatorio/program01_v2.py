@@ -133,13 +133,13 @@ def check_food(img, snake_positions, colors, head):
 
 
 def check_cross_hit(movement, top, bottom, left, right, snake_positions):
-    cross = {
+    cross_dict = {
         "NW": check_cross_hit_NW,
         "NE": check_cross_hit_NE,
         "SW": check_cross_hit_SW,
         "SE": check_cross_hit_SE
     }
-    cross[movement](top, bottom, left, right, snake_positions)
+    cross_dict[movement](top, bottom, left, right, snake_positions)
 
 
 def check_cross_hit_NW(top, bottom, left, right, snake_positions):
@@ -197,6 +197,7 @@ def generate_snake(start_img: str, position: list[int, int],
         "debug": (0, 0, 255)
     }
 
+    # noinspection PyShadowingNames
     image = get_img(start_img)
     snake_positions = [[position[1], position[0]]]
 
@@ -240,7 +241,7 @@ if __name__ == "__main__":
                 "/output/output_end_", "/test/test")
         )
         # print(grid.toImg())
-        print(f"snake lenght: {result}")
+        print(f"snake length: {result}")
         print("-"*os.get_terminal_size().columns)
 
     print(f'Execution time: {time.time() - start_time}s')
