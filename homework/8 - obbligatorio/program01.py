@@ -55,12 +55,8 @@ funzione usata per la soluzione deve essere ricorsiva.
 
 '''
 
-table = list[list[str]]
-endings = list[int, int, int]
-neighbors = set[tuple[int, int]]
 
-
-def calc_ending(state: table, endings: endings):
+def calc_ending(state: list[list[str]], endings: list[int, int, int]):
     # print(*state, sep="\n", end="\n\n")
     numW = len([cell for row in state for cell in row if cell == "W"])
     numB = len([cell for row in state for cell in row if cell == "B"])
@@ -69,11 +65,12 @@ def calc_ending(state: table, endings: endings):
                   endings[2] + int(numB == numW)]
 
 
-def check_free_pos(state: table):
+def check_free_pos(state: list[list[str]]):
     return any(c for row in state for c in row if c == ".")
 
 
-def check_enemy_neighbors(state: table, pos: tuple[int, int], neighbors: neighbors, black_turn: bool):
+def check_enemy_neighbors(state: list[list[str]], pos: tuple[int, int],
+                          neighbors: set[tuple[int, int]], black_turn: bool):
     enemy = "W" if black_turn else "B"
     for neighbor in neighbors:
         dr, dc = pos[0] + neighbor[0], pos[1] + neighbor[1]
@@ -82,19 +79,22 @@ def check_enemy_neighbors(state: table, pos: tuple[int, int], neighbors: neighbo
     return False
 
 
-def get_free_pos(state: table, neighbors: neighbors, black_turn: bool) -> list[tuple[int, int]]:
+def get_free_pos(state: list[list[str]], neighbors: set[tuple[int, int]],
+                 black_turn: bool) -> list[tuple[int, int]]:
     return [(r, c) for r, row in enumerate(state) for c, cell in enumerate(row) if
             cell == "." and check_enemy_neighbors(state, (r, c), neighbors, black_turn)]
 
 
-def capture_enemy_neighbors(state: table, pos: tuple[int, int], neighbors: neighbors, black_turn: bool):
+def capture_enemy_neighbors(state: list[list[str]], pos: tuple[int, int],
+                            neighbors: set[tuple[int, int]], black_turn: bool):
     for neighbor in neighbors:
         dr, dc = pos[0] + neighbor[0], pos[1] + neighbor[1]
         if 0 <= dr < len(state) and 0 <= dc < len(state[0]) and state[dr][dc] != ".":
             state[dr][dc] = "B" if black_turn else "W"
 
 
-def play(state: table, endings: endings, neighbors: neighbors, black_turn: bool):
+def play(state: list[list[str]], endings: list[int, int, int],
+         neighbors: set[tuple[int, int]], black_turn: bool):
     if not check_free_pos(state):
         calc_ending(state, endings)
         return
