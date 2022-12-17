@@ -147,5 +147,5 @@ if __name__ == "__main__":
     for i, (filename, expected) in enumerate(tests):
         R = dumbothello(filename)
         print(f'test n {i}')
-        print(f'\tresult:    {R}')
-        print(f'\texpected:  {expected}\n')
+        print(f'\tresult:   {R}')
+        print(f'\texpected: {expected}\n')
