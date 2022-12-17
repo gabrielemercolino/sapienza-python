@@ -133,5 +133,19 @@ def dumbothello(filename: str) -> tuple[int, int, int]:
 
 
 if __name__ == "__main__":
-    R = dumbothello("boards/01.txt")
-    print(R)
+    tests = [
+        ('boards/01.txt', (2, 16, 0)),
+        ('boards/02.txt', (78, 2, 16)),
+        ('boards/03.txt', (1574, 2700, 1926)),
+        ('boards/04.txt', (1538, 2292, 1502)),
+        ('boards/05.txt', (70, 48, 0)),
+        ('boards/06.txt', (190, 274, 104)),
+        ('boards/07.txt', (60, 25, 13)),
+        ('boards/08.txt', (2742, 1204, 794)),
+        ('boards/09.txt', (0, 16, 15))
+    ]
+    for i, (filename, expected) in enumerate(tests):
+        R = dumbothello(filename)
+        print(f'test n {i}')
+        print(f'\tresult:    {R}')
+        print(f'\texpected:  {expected}\n')
