@@ -1,0 +1,22 @@
+L'algoritmo procede in questo modo:
+    - leggo il file e lo salvo in una lista di liste (come con le immagini)
+    - inizializzo una lista che sarebbe la tripla che poi verrà convertita in tupla per essere ritornata.
+    - richiamo la funzione ricorsiva
+    - ritorno la tripla
+
+In particolare la funzione ricorsiva funziona così:
+    - prendo tutte le posizioni libere che ne hanno almeno una occupata dall'avversario
+    - se non ce ne sono calcolo quale dei 3 valori della tripla aumentare e ritorno
+    - altrimenti entro in un ciclo for dove:
+        - creo un nuovo stato occupando la posizione con il giocatore corrente
+        - catturo le celle vicine avversarie
+        - richiamo la stessa funzione sul nuovo stato
+
+Come ultima cosa sono state create funzioni di supporto (per esempio una per trovare le celle catturabili, oppure per
+catturare i vicini ecc)
+Inoltre per quanto riguarda la funzione per catturare i vicini è stato creato un set che contiene le coordinate per
+raggiungere tutti i vicini in modo da cercarli con un ciclo rispetto alla posizione se la posizione calcolata rientra
+dentro la tabella (esempio: se mi trovo alla prima colonna non devo cercare i vicini a sinistra). Per non rallentare
+il programma e sapendo di non poter utilizzare variabili globali è stato creato nella funzione dumbothello e passata
+tutte le volte necessarie (è stato testato che crearlo ogni volta dentro la funzione che lo utilizza rallenta non di
+poco il programma)
