@@ -55,4 +55,4 @@ pytest test_01.py -v -rA
 You can also add the following switches to get more info:
 - `--profile` to get the top 10 longest calls (not very useful if you use the line-profiler)
 - `--durations 0` to get a more detailed list of times for every test (idk, even without it is printed, I'm literally copying what my teacher wrote)
-- `-x` to stop to the first failure (useful in production but usally here there is only working code)
+- `-x` to stop to the first failure (useful in production but usually here there is only working code)
