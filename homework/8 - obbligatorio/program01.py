@@ -13,9 +13,10 @@ def calc_ending(state: list[list[str]], endings: list[int, int, int]):
 def check_enemy_neighbors(state: list[list[str]], pos: tuple[int, int],
                           neighbors: set[tuple[int, int]], black_turn: bool):
     enemy = "W" if black_turn else "B"
+    W, H = len(state[0]), len(state)
     for neighbor in neighbors:
         dr, dc = pos[0] + neighbor[0], pos[1] + neighbor[1]
-        if (0 <= dr < len(state)) and (0 <= dc < len(state[0])) and state[dr][dc] == enemy:
+        if 0 <= dr < H and 0 <= dc < W and state[dr][dc] == enemy:
             return True
     return False
 
@@ -28,9 +29,10 @@ def get_free_pos(state: list[list[str]], neighbors: set[tuple[int, int]],
 
 def capture_enemy_neighbors(state: list[list[str]], pos: tuple[int, int],
                             neighbors: set[tuple[int, int]], black_turn: bool):
+    W, H = len(state[0]), len(state)
     for neighbor in neighbors:
         dr, dc = pos[0] + neighbor[0], pos[1] + neighbor[1]
-        if 0 <= dr < len(state) and 0 <= dc < len(state[0]) and state[dr][dc] != ".":
+        if 0 <= dr < H and 0 <= dc < W and state[dr][dc] != ".":
             state[dr][dc] = "B" if black_turn else "W"
 
 
