@@ -4,6 +4,7 @@ Utilities to load/save a PNG file to our encoding.
 '''
 import png
 
+
 def load(filename):
     """ Carica la immagine PNG dal file 'filename'.  Torna una lista di liste di pixel.
         Ogni pixel è una tupla (R, G, B) dei 3 colori con valori tra 0 e 255.
@@ -15,9 +16,9 @@ def load(filename):
         w, h, png_img, _ = reader.asRGB8()
         # ottimizzata leggermente
         w *= 3
-        return [ [ (line[i],line[i+1],line[i+2]) 
-                   for i in range(0, w, 3) ]
-                 for line in png_img ]
+        return [[(line[i], line[i + 1], line[i + 2])
+                 for i in range(0, w, 3)]
+                for line in png_img]
 
 
 def save(img, filename):
@@ -26,6 +27,5 @@ def save(img, filename):
         Save the 'img' image in a 'filename' PNG file. img is a list of lists of pixel.
         Each pixel is a tuple (R, G, B) of its 3 colors with values in 0..255.
     """
-    pngimg = png.from_array(img,'RGB')
+    pngimg = png.from_array(img, 'RGB')
     pngimg.save(filename)
-
