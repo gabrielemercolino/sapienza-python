@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import images
+import os
 
 ################################################################################
 ################################################################################
@@ -18,9 +20,9 @@ To pass the exam you have to:
 
 The final score is the sum of the solved problems.
 """
-name       = "NAME"
-surname    = "SURNAME"
-student_id = "MATRICULATION NUMBER"
+name = "Gabriele"
+surname = "Mercolino"
+student_id = "2046313"
 
 #########################################
 
@@ -40,14 +42,17 @@ student_id = "MATRICULATION NUMBER"
 
 # %%  ---- FUNC1 ----
 ''' func1: 2 points
-Define a function func1(string_list) that takes as input a list of strings an
+Define a function func1(string_list) that takes as input a list of strings and
 returns another list with only the strings that start with a capital letter.
 The returned list has to be ordered by the number of letters in
 increasing order.
 '''
-def func1(string_list):
-    # YOUR CODE HERE
-    pass
+
+
+def func1(string_list: list[str]) -> list[str]:
+    result = [word for word in string_list if word[0].isupper()]
+    return sorted(result, key=len)
+
 
 # %%  ---- FUNC2 ----
 ''' func2: 2 points
@@ -65,9 +70,16 @@ Content of animals.txt:
     cat     purr
 The call func2('animals.txt') returns {'cat':{'meaow', 'purr'}, 'dog':{'woof'}
 '''
+
+
 def func2(pathname):
-    # YOUR CODE HERE
-    pass
+    diz = {}
+    with open(pathname) as f:
+        for line in f:
+            key, val = line.split()
+            diz[key] = diz.get(key, set()) | {val}
+    return diz
+
 
 # %%  ---- FUNC3 ----
 '''  func3: 2 points
@@ -79,11 +91,16 @@ The list built as above has to be written, one value for each row, in a text
 file, with name pathname,
 The function has to return the maximum value of the built list.
 '''
-def func3(listA, listB, listC, pathname):
-    # YOUR CODE HERE
-    pass
 
-    
+
+def func3(listA, listB, listC, pathname):
+    result = [(val1 + val2) * val3 for val1, val2, val3 in zip(listA, listB, listC)]
+    text = "".join(str(val) + "\n" for val in result)
+    with open(pathname, "wt") as f:
+        f.write(text)
+    return max(result)
+
+
 # %%  ---- FUNC4 ----
 """ func4: 6 points
 
@@ -117,10 +134,18 @@ for each sub problem. Compose everything together.
 """
 
 
-def func4(triangles):
-    # WRITE HERE YOUR CODE
-    pass
+def is_right(c1: int, c2: int, ip: int):
+    return round((c1 ** 2 + c2 ** 2), 3) == round(ip ** 2, 3)
 
+
+def func4(triangles: list[tuple[int, int, int]]):
+    count = 0
+    for tr in triangles.copy():
+        triangle = sorted(tr)
+        if not is_right(*triangle):
+            triangles.remove(tr)
+            count += 1
+    return count
 
 
 # %%  ---- FUNC5 ----
@@ -130,11 +155,15 @@ flipped with respect to the vertical axis and saves the image in the file
 with path as the filename string taken in input. The function returns the
 color of the pixel in position (0,0) of the new image.
 """
-import images
-def func5(img, filename):
-    # WRITE HERE YOUR CODE
-    pass
 
+
+def func5(img, filename):
+    new_img = [[] for _ in img]
+    for i, row in enumerate(img):
+        for pixel in row:
+            new_img[i].insert(0, pixel)
+    images.save(new_img, filename)
+    return new_img[0][0]
 
 
 # %% ----------------------------------- EX.1 ----------------------------------- #
@@ -165,12 +194,26 @@ NOTE: Break down the problem in small sub problems. Write small
 functions for each sub problem. Compose everything together.
 """
 
-import os
+
+def rec_1(directory, namefile, lst):
+    dir_content = os.listdir(directory)
+    if not dir_content:
+        return
+    filenames, sub_dirs = [f for f in dir_content if os.path.isfile(f"{directory}/{f}")], \
+        [f for f in dir_content if os.path.isdir(f"{directory}/{f}")]
+    for filename in filenames:
+        if filename == namefile:
+            with open(f'{directory}/{filename}') as f:
+                lst.append([int(num) for n in f.readlines() for num in n.split()])
+    for sub_dir in sub_dirs:
+        rec_1(f'{directory}/{sub_dir}', namefile, lst)
 
 
 def ex1(directory, namefile):
-    # WRITE HERE YOUR CODE
-    pass
+    lst = []
+    rec_1(directory, namefile, lst)
+    print(*lst, sep="\n")
+    return [sum(vals) for vals in zip(*lst)]
 
 
 # %% Ex2
@@ -191,17 +234,23 @@ or the list ['ade', 'bde', 'cde', 'dea', 'deb', 'dec', 'ab', 'ac', 'ba', 'bc', '
 """
 
 
+def rec_2(strings: set[str], n, result: list, partial):
+    if n == 0:
+        result.append(partial)
+    for string in strings:
+        rec_2(strings - {string}, n - 1, result, partial + string)
+
+
 def ex2(strings, n):
-    # WRITE HERE YOUR CODE
-    pass
+    result = []
+    rec_2(strings, n, result, partial='')
+    return sorted(result, key=lambda word: (-len(word), word))
+
 
 ###################################################################################
 if __name__ == '__main__':
     # Place your tests here
-    print('*'*50)
-    print('ITA\nDevi eseguire il grade.py se vuoi debuggare con il grader incorporato.')
-    print('Altrimenit puoi inserire qui del codice per testare le tue funzioni ma devi scriverti i casi che vuoi testare')
-    print('*'*50)
-    print('ENG\nYou have to run grade.py if you want to debug with the automatic grader.')
-    print('Otherwise you can insert here you code to test the functions but you have to write your own tests')
-    print('*'*50)
+    strings = {'a', 'b', 'c', 'de'}
+    n = 2
+    res = ex2(strings, n)
+    print(res)
