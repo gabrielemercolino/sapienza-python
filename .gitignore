@@ -14,3 +14,4 @@ homework/6 - obbligatorio/test/*
 homework/6 - obbligatorio/output/*
 /*/*/*.py.pclprof
 /*/*/pytest.pclprof
+/exam_simulation_20_12_2022/*.txt
