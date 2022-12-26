@@ -1,0 +1,17 @@
+[
+  {
+    "__type__": "Square",
+    "gray": 0,
+    "side": 1
+  },
+  {
+    "__type__": "Circle",
+    "gray": 1,
+    "radius": 1
+  },
+  {
+    "__type__": "Triangle",
+    "gray": 1,
+    "side": 1
+  }
+]
