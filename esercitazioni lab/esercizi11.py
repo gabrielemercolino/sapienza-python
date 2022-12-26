@@ -1,9 +1,7 @@
 # Ignorare le righe fino alla 31
-from typing import Any, Callable, List, Tuple, Dict, Union
-import sys
-from unittest import result
 import json
 import math
+from typing import Any, Callable, List
 
 
 class bcolors:
