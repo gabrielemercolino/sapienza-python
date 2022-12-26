@@ -1,0 +1,19 @@
+{
+  "tag": "Rickard Stark, padre di ",
+  "nodes": [
+    { 
+      "tag" : "Eddard Stark (padre di ",
+      "nodes": [
+        {
+          "tag": "Robb e "
+        },
+        {
+          "tag": "Arya "
+        }
+      ]
+    },
+    { 
+      "tag" : ") e Benjen Stark"
+    }
+  ]
+}
