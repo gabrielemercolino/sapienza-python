@@ -127,7 +127,7 @@ evaluation.evaluate(num_digits)
 ### Es. 4 - Banale
 Modificare la funzione precedente in maniera tale che funzioni anche
 con numeri negativi (se non funziona gia' come prima).  Nota da dentro
-la funzione `num_digits_net` si puo richiamare la funzione vecchia per
+la funzione `num_digits_neg` si puo richiamare la funzione vecchia per
 controllare se funziona
 """
 
@@ -219,10 +219,11 @@ in quanto
 
 
 def check_S_in_T(S, T):
-    result = [ 0 for s in S]
-    for i in range(len(S)):
-        result[i] = T.count(S[i])
-    return result
+    return [T.count(s) for s in S]
+    #result = [ 0 for s in S]
+    #for i in range(len(S)):
+    #    result[i] = T.count(S[i])
+    #return result
 
 evaluation.evaluate(check_S_in_T)
 #evaluation.show_tests(check_S_in_T)
@@ -392,7 +393,7 @@ rende
 
 
 def list_multipli(L):
-    return [i for i in L if i%2==0] + [k for k in L if k%5==0]
+    return [e for e in L if e%2==0] + [u for u in L if u%5==0]
 
 evaluation.evaluate(list_multipli)
 #evaluation.show_tests(list_multipli)
@@ -466,8 +467,8 @@ evaluation.evaluate(get_list_except_min_max)
 ### Es. 16 - Medio/Difficile
 Data una lista `L` in ingresso alla funzione modificare la lista
 L in-place (SENZA CREARNE UNA COPIA) in maniera da eliminare il minimo
- e il massimo e restituire il numero totale di elementi eliminati.
- 
+e il massimo e restituire il numero totale di elementi eliminati.
+
 1) La lista in ingresso puo' essere vuota.
 2) Il massimo e minimo valore possono NON essere unici.
 3) il minimo e il massimo possono coincidere.
@@ -523,7 +524,7 @@ evaluation.evaluate(get_list_except_min_max_general)
 ### Es. 17 - Difficile
 '''
 Sono date in ingresso tre liste di lunghezza uguale di nome
- `L`, `src`, e  `dst`.
+`L`, `src`, e  `dst`.
 E' necessario creare una nuova lista `out` in uscita con le seguenti
 proprietà:
 -   la nuova lista out deve contenere il valore preso da L alla posizione indicata
@@ -729,12 +730,10 @@ NON lo e'.
 def anagramma(S, T):
     if len(S) != len(T):
         return False
-    characters = dict()
-    for character in S:
-        characters[character] = characters.get(character, 0) +1
-    for c in characters:
-        if characters[c] != T.count(c):
-            return False
+
+    Tlen = len(T)
+    for i, c in enumerate(S):
+        if T[Tlen-i] != c: return False
     return True
 #evaluation.show_tests(anagramma)
 evaluation.evaluate(anagramma)
