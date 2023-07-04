@@ -23,19 +23,11 @@ conda activate <env name>
 
 You will also need to install this packages:
 ```bash
-conda install -c conda-forge typeguard
-conda install -c conda-forge ddt
-conda install -c conda-forge pytest-timeout
-conda install -c conda-forge stopit	
-conda install -c conda-forge pytest-profiling
-conda install -c conda-forge radon
-conda install -c conda-forge typeguard
+conda install -c conda-forge typeguard ddt pytest-timeout stopit	 pytest-profiling radon typeguard
 ```
 If you use *Spyder IDE* you can also install
 ```bash
-conda install -c conda-forge spyder
-conda install -c conda-forge spyder-unittest
-conda install -c conda-forge pylsp-mypy
+conda install -c conda-forge spyder spyder-unittest pylsp-mypy
 ```
 If you prefer *Pycharm* (like me) you can also install the `line-profiler` extension  
 
