@@ -23,7 +23,7 @@ conda activate <env name>
 
 You will also need to install this packages:
 ```bash
-conda install -c conda-forge typeguard ddt pytest-timeout stopit	 pytest-profiling radon typeguard
+conda install -c conda-forge typeguard ddt pytest-timeout stopit pytest-profiling radon typeguard
 ```
 If you use *Spyder IDE* you can also install
 ```bash
